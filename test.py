@@ -1,18 +1,16 @@
 __author__ = 'vesely'
-import pyximport
-pyximport.install()
 
-from fuzzy import Dawg
+import pydawg
 
 words = [u'foo', u'bar', u'baz', u'qux', u'quux', u'corge', u'grault', u'garply', u'waldo', u'fred', u'plugh', u'xyzzy',
          u'thud']
 words.sort()
 
 #build directed acyclic word graph
-dawg = Dawg()
+d = pydawg.PyDawg()
 for word in words:
-    dawg.insert(word)
-dawg.finish()
+    d.insert(word)
+d.finish()
 
 #query for words within edit distance 2 of the word boz
-print dawg.fuzzy_search(u"boz", 2)
+print d.fuzzy_search(u"boz", 2)
