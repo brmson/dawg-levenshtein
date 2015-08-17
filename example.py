@@ -6,11 +6,14 @@ words = [u'foo', u'bar', u'baz', u'qux', u'quux', u'corge', u'grault', u'garply'
          u'thud']
 words.sort()
 
-#build directed acyclic word graph
+# build directed acyclic word graph
 d = pydawg.PyDawg()
 for word in words:
     d.insert(word)
 d.finish()
 
-#query for words within edit distance 2 of the word boz
-print d.fuzzy_search(u"boz", 2)
+# query for words within edit distance 2 of the word boz
+results = d.fuzzy_search(u"boz", 2)
+
+for result in results:
+    print result.word, result.edit_distance, result.edit_operations

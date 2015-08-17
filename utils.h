@@ -42,4 +42,28 @@ min(int a, int b, int c) {
     return m;
 }
 
+template<typename T>
+T** newArray(const size_t n1, const size_t n2){
+    T** ar=new T*[n1];
+    for(size_t i=0;i<n1;i++){
+        ar[i]=new T[n2];
+    }
+    return ar;
+}
+
+template<typename T>
+void deleteArray(T** ar, const size_t n1){
+    for(size_t i=0;i<n1;i++){
+        delete[] ar[i];
+    }
+     delete[] ar;
+}
+
+template<typename T, typename C>
+void append(std::vector<T>& results, const std::vector<T>& items, const C& item){
+    for(auto it:items){
+        results.push_back(it+item);
+    }
+}
+
 #endif /* UTILS_H_ */

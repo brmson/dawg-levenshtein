@@ -16,10 +16,70 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <algorithm>
 #include <queue>
 
 typedef char chartype;
 typedef std::string stringtype;
+
+enum OpType {
+    DELETE = 1, REPLACE = 2, INSERT = 4, NOTHING = 0
+};
+
+class EditOperation {
+    public:
+    EditOperation(const chartype &from, const chartype &to, size_t pos, const OpType &op) : m_from(from), m_to(to),
+                                                                                              m_pos(pos), m_op(op) { }
+
+
+    chartype getFrom() const {
+        return m_from;
+    }
+
+    chartype getTo() const {
+        return m_to;
+    }
+
+    size_t getPos() const {
+        return m_pos;
+    }
+
+    const OpType &getOp() const {
+        return m_op;
+    }
+
+    friend std::ostream &operator<<(std::ostream &, const EditOperation &);
+    private:
+
+    chartype m_from;
+    chartype m_to;
+    size_t m_pos;
+    OpType m_op;
+};
+
+class WordResult {
+    public:
+    WordResult(int editDistance, const std::vector<EditOperation*> &operations, const stringtype &word) : m_edit_distance(
+            editDistance), m_operations(operations), m_word(word) { }
+
+    stringtype getWord(){
+        return m_word;
+    }
+
+
+    int getEditDistance() const {
+        return m_edit_distance;
+    }
+
+    const std::vector<EditOperation*> &getEditOperations() const {
+        return m_operations;
+    }
+
+private:
+    int m_edit_distance;
+    std::vector<EditOperation*> m_operations;
+    stringtype m_word;
+};
 
 class DawgNode {
 
@@ -112,7 +172,7 @@ public:
 
     bool contains(stringtype &word);
 
-    std::vector<stringtype> fuzzy_search(stringtype &word, int fuzziness);
+    std::vector<WordResult*> fuzzy_search(stringtype &word, int fuzziness);
 
     void load(const std::string &filename);
 
@@ -131,9 +191,11 @@ private:
 
     void compress_graph(size_t level);
 
-    void fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<stringtype> &results, int **rows,
-                                int fuzziness, chartype *path, int depth);
+    void fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult*>& results, int **rows,
+                                char **path_rows, int fuzziness, chartype *path, int depth);
 
+    std::vector<EditOperation*> get_segmented(stringtype &word, chartype *similar_word, char **paths, int depth,
+                                                    int c);
 };
 
 

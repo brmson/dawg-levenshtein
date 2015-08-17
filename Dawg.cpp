@@ -44,60 +44,110 @@ void Dawg::finish() {
     compress_graph(0);
 }
 
-std::vector<stringtype> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
+std::vector<WordResult*> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
     const size_t word_length = word.size();
     const size_t buffer_size = word_length + 1;
     const size_t buffer_size_f = buffer_size + fuzziness + 1;
-    int **rows = new int *[buffer_size_f];
-    for (int i = 0; i < buffer_size_f; i++)rows[i] = new int[buffer_size];
+    int **rows = newArray<int>(buffer_size_f, buffer_size);
+    char **path_rows = newArray<char>(buffer_size_f, buffer_size);
     int *row = rows[0];
     chartype path[word_length + fuzziness];
     std::memset(path, 0, sizeof path);
-    for (int i = 0; i < buffer_size; i++)row[i] = i;
-    std::vector<stringtype> results;
+    for (int i = 0; i < buffer_size; i++) {
+        row[i] = i;
+        path_rows[0][i] = OpType::INSERT;
+    }
+    std::vector<WordResult*> results;
     for (auto it:m_root.getChilds()) {
         path[0] = it->getLetter();
-        fuzzy_search_recursive(it, word, results, rows, fuzziness, path, 1);
+        fuzzy_search_recursive(it, word, results, rows, path_rows, fuzziness, path, 1);
     }
-    for (int i = 0; i < buffer_size_f; i++) delete rows[i];
-    delete rows;
+    deleteArray(rows, buffer_size_f);
+    deleteArray(path_rows, buffer_size_f);
     return results;
 }
 
 
-void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<stringtype> &results, int **rows,
+void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult*>& results, int **rows,
+                                  char **path_rows,
                                   int fuzziness, chartype *path, int depth) {
     size_t word_length = word.size();
     size_t buffer_size = word_length + 1;
 
     int *row = rows[depth];
+    char *path_row = path_rows[depth];
     int *prev_row = rows[depth - 1];
     row[0] = prev_row[0] + 1;
+    path_row[0] = OpType::DELETE;
     int minimum = INT32_MAX;
     for (int i = 1; i < buffer_size; i++) {
+        bool cont = true;
         int insert_cost = row[i - 1] + 1;
         int delete_cost = prev_row[i] + 1;
         int replace_cost = prev_row[i - 1];
         if (word[i - 1] != node->getLetter()) {
             replace_cost++;
+            cont = false;
         }
-        row[i] = min(insert_cost, delete_cost, replace_cost);
+        path_row[i] = 0;
+        if (insert_cost <= delete_cost && insert_cost <= replace_cost) {
+            path_row[i] |= OpType::INSERT;
+            row[i] = insert_cost;
+        } else if (delete_cost <= replace_cost) {
+            row[i] = delete_cost;
+            path_row[i] |= OpType::DELETE;
+        } else if (!cont) {
+            row[i] = replace_cost;
+            path_row[i] |= OpType::REPLACE;
+        } else {
+            row[i] = replace_cost;
+        }
         if (minimum > row[i]) {
             minimum = row[i];
         }
     }
     if (row[word_length] <= fuzziness && node->isFinal()) {
-        results.push_back(stringtype(path));
+        const std::string &string = stringtype(path);
+        const std::vector<EditOperation*> &x = get_segmented(word, path, path_rows, depth, word_length);
+        results.push_back(new WordResult(row[word_length], x, string));
     }
     if (minimum <= fuzziness) {
         size_t child_count = node->getChilds().size();
         const std::vector<DawgNode *> &childs = node->getChilds();
         for (size_t i = 0; i < child_count; i++) {
             path[depth] = childs[i]->getLetter();
-            fuzzy_search_recursive(childs[i], word, results, rows, fuzziness, path, depth + 1);
+            fuzzy_search_recursive(childs[i], word, results, rows, path_rows, fuzziness, path, depth + 1);
         }
     }
     path[depth] = 0;
+}
+
+
+std::vector<EditOperation*> Dawg::get_segmented(stringtype& word, chartype *similar_word, char **paths, int depth,
+                                               int c) {
+    std::vector<EditOperation*> edit_operations;
+    while (depth > 0 || c > 0) {
+        switch (paths[depth][c]) {
+            case OpType::DELETE:
+                depth--;
+                edit_operations.push_back(new EditOperation(0, similar_word[depth], c, OpType::INSERT));
+                break;
+            case OpType::INSERT:
+                c--;
+                edit_operations.push_back(new EditOperation(word[c], 0, c, OpType::DELETE));
+                break;
+            case OpType::REPLACE:
+                depth--;
+                c--;
+                edit_operations.push_back(new EditOperation(word[c], similar_word[depth], c, OpType::REPLACE));
+                break;
+            default:
+                depth--;
+                c--;
+                break;
+        }
+    }
+    return edit_operations;
 }
 
 bool Dawg::contains(stringtype &word) {
@@ -153,10 +203,7 @@ void Dawg::save(const std::string &filename) {
     for (auto item:m_minimized_nodes) {
         item->toBytes(data);
     }
-//    std::vector<uint8_t> compressed_data(data.size());
-//    int compressed_size = LZ4_compressHC((char *) &data[0], (char *) &compressed_data[0], (int) data.size());
     std::ofstream file(filename, std::ios::binary);
-//    file.write((char *) &compressed_data[0], compressed_size);
     file.write((char *) &data[0], data.size());
     file.close();
 }
@@ -259,3 +306,6 @@ Dawg::~Dawg() {
     }
 }
 
+std::ostream &operator<<(std::ostream &ostream, const EditOperation &operation) {
+    return ostream << operation.m_from << "->" << operation.m_to << ", pos=" << operation.m_pos;
+}
