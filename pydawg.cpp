@@ -472,38 +472,10 @@ static const char *__pyx_f[] = {
 };
 
 /*--- Type declarations ---*/
-struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult;
-struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation;
 struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg;
 
-/* "alza/model/fuzzy/pydawg.pyx":33
- *         void save(string);
- * 
- * cdef class PyWordResult:             # <<<<<<<<<<<<<<
- *     cdef WordResult *thisptr
- *     def __cinit__(self):
- */
-struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult {
-  PyObject_HEAD
-  WordResult *thisptr;
-};
-
-
-/* "alza/model/fuzzy/pydawg.pyx":54
- *             return operations
- * 
- * cdef class PyEditOperation:             # <<<<<<<<<<<<<<
- *     cdef EditOperation *thisptr
- *     def __cinit__(self):
- */
-struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation {
-  PyObject_HEAD
-  EditOperation *thisptr;
-};
-
-
-/* "alza/model/fuzzy/pydawg.pyx":84
- *         return self.__str__()
+/* "alza/model/fuzzy/pydawg.pyx":62
+ *     return (<bytes> str).decode("UTF-8") if str else ""
  * 
  * cdef class PyDawg:             # <<<<<<<<<<<<<<
  *     cdef Dawg *thisptr
@@ -598,13 +570,69 @@ static PyObject *__Pyx_GetBuiltinName(PyObject *name);
 static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
     Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
 
-static CYTHON_INLINE int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed);
+static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
+
+static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[], \
+    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args, \
+    const char* function_name);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_PyObject_DelAttrStr(o,n) __Pyx_PyObject_SetAttrStr(o,n,NULL)
+static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr_name, PyObject* value) {
+    PyTypeObject* tp = Py_TYPE(obj);
+    if (likely(tp->tp_setattro))
+        return tp->tp_setattro(obj, attr_name, value);
+#if PY_MAJOR_VERSION < 3
+    if (likely(tp->tp_setattr))
+        return tp->tp_setattr(obj, PyString_AS_STRING(attr_name), value);
+#endif
+    return PyObject_SetAttr(obj, attr_name, value);
+}
+#else
+#define __Pyx_PyObject_DelAttrStr(o,n)   PyObject_DelAttr(o,n)
+#define __Pyx_PyObject_SetAttrStr(o,n,v) PyObject_SetAttr(o,n,v)
+#endif
 
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw);
 #else
 #define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
+#endif
+
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+#else
+#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#endif
+
+static CYTHON_INLINE int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed);
+
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact);
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len)) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        Py_SIZE(list) = len+1;
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
+#else
+#define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
+#endif
+
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
 
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
@@ -622,26 +650,67 @@ static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
 #define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
 #endif
 
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
+static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type);
+
+#define __Pyx_CyFunction_USED 1
+#include <structmember.h>
+#define __Pyx_CYFUNCTION_STATICMETHOD  0x01
+#define __Pyx_CYFUNCTION_CLASSMETHOD   0x02
+#define __Pyx_CYFUNCTION_CCLASS        0x04
+#define __Pyx_CyFunction_GetClosure(f) \
+    (((__pyx_CyFunctionObject *) (f))->func_closure)
+#define __Pyx_CyFunction_GetClassObj(f) \
+    (((__pyx_CyFunctionObject *) (f))->func_classobj)
+#define __Pyx_CyFunction_Defaults(type, f) \
+    ((type *)(((__pyx_CyFunctionObject *) (f))->defaults))
+#define __Pyx_CyFunction_SetDefaultsGetter(f, g) \
+    ((__pyx_CyFunctionObject *) (f))->defaults_getter = (g)
+typedef struct {
+    PyCFunctionObject func;
+#if PY_VERSION_HEX < 0x030500A0
+    PyObject *func_weakreflist;
 #endif
+    PyObject *func_dict;
+    PyObject *func_name;
+    PyObject *func_qualname;
+    PyObject *func_doc;
+    PyObject *func_globals;
+    PyObject *func_code;
+    PyObject *func_closure;
+    PyObject *func_classobj;
+    void *defaults;
+    int defaults_pyobjects;
+    int flags;
+    PyObject *defaults_tuple;
+    PyObject *defaults_kwdict;
+    PyObject *(*defaults_getter)(PyObject *);
+    PyObject *func_annotations;
+} __pyx_CyFunctionObject;
+static PyTypeObject *__pyx_CyFunctionType = 0;
+#define __Pyx_CyFunction_NewEx(ml, flags, qualname, self, module, globals, code) \
+    __Pyx_CyFunction_New(__pyx_CyFunctionType, ml, flags, qualname, self, module, globals, code)
+static PyObject *__Pyx_CyFunction_New(PyTypeObject *, PyMethodDef *ml,
+                                      int flags, PyObject* qualname,
+                                      PyObject *self,
+                                      PyObject *module, PyObject *globals,
+                                      PyObject* code);
+static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *m,
+                                                         size_t size,
+                                                         int pyobjects);
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *m,
+                                                            PyObject *tuple);
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *m,
+                                                             PyObject *dict);
+static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *m,
+                                                              PyObject *dict);
+static int __Pyx_CyFunction_init(void);
 
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases);
 
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
-#else
-#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
-#endif
-
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact);
-
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name);
-
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[], \
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args, \
-    const char* function_name);
+static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name, PyObject *qualname,
+                                           PyObject *mkw, PyObject *modname, PyObject *doc);
+static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObject *bases, PyObject *dict,
+                                      PyObject *mkw, int calculate_metaclass, int allow_py2_metaclass);
 
 typedef struct {
     int code_line;
@@ -661,10 +730,6 @@ static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
-
-static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
 
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
@@ -705,6 +770,10 @@ static void __Pyx_CppExn2PyErr() {
 }
 #endif
 
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
@@ -721,33 +790,23 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 /* Module declarations from 'libcpp.string' */
 
 /* Module declarations from 'alza.model.fuzzy.pydawg' */
-static PyTypeObject *__pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyWordResult = 0;
-static PyTypeObject *__pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyEditOperation = 0;
 static PyTypeObject *__pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyDawg = 0;
+static PyObject *__pyx_f_4alza_5model_5fuzzy_6pydawg_to_unicode(char); /*proto*/
+static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_std__in_string(std::string const &); /*proto*/
 static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_string(std::string const &); /*proto*/
-static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
 #define __Pyx_MODULE_NAME "alza.model.fuzzy.pydawg"
 int __pyx_module_is_main_alza__model__fuzzy__pydawg = 0;
 
 /* Implementation of 'alza.model.fuzzy.pydawg' */
 static PyObject *__pyx_builtin_range;
-static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___cinit__(CYTHON_UNUSED struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self); /* proto */
-static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_2__dealloc__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self); /* proto */
-static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___cinit__(CYTHON_UNUSED struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__dealloc__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_word, PyObject *__pyx_v_edit_distance, PyObject *__pyx_v_edit_operations); /* proto */
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_e_from, PyObject *__pyx_v_e_to, PyObject *__pyx_v_position, PyObject *__pyx_v_operation); /* proto */
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__str__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__repr__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
 static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg___cinit__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self); /* proto */
 static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_2__dealloc__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_4insert(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self, PyObject *__pyx_v_word); /* proto */
@@ -756,13 +815,16 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(struct _
 static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_10fuzzy_search(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self, PyObject *__pyx_v_word, int __pyx_v_fuzziness); /* proto */
 static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_12load(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self, PyObject *__pyx_v_filename); /* proto */
 static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_14save(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self, PyObject *__pyx_v_filename); /* proto */
-static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyWordResult(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyEditOperation(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyDawg(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static char __pyx_k__2[] = "";
+static char __pyx_k_op[] = "op";
+static char __pyx_k_doc[] = "__doc__";
 static char __pyx_k_str[] = "__str__";
 static char __pyx_k_e_to[] = "e_to";
+static char __pyx_k_init[] = "__init__";
 static char __pyx_k_main[] = "__main__";
+static char __pyx_k_repr[] = "__repr__";
+static char __pyx_k_self[] = "self";
 static char __pyx_k_test[] = "__test__";
 static char __pyx_k_word[] = "word";
 static char __pyx_k_UTF_8[] = "UTF-8";
@@ -772,27 +834,60 @@ static char __pyx_k_Insert[] = "Insert";
 static char __pyx_k_author[] = "__author__";
 static char __pyx_k_decode[] = "decode";
 static char __pyx_k_e_from[] = "e_from";
+static char __pyx_k_module[] = "__module__";
 static char __pyx_k_vesely[] = "vesely";
 static char __pyx_k_Replace[] = "Replace";
+static char __pyx_k_prepare[] = "__prepare__";
 static char __pyx_k_position[] = "position";
+static char __pyx_k_qualname[] = "__qualname__";
 static char __pyx_k_fuzziness[] = "fuzziness";
+static char __pyx_k_metaclass[] = "__metaclass__";
 static char __pyx_k_operation[] = "operation";
 static char __pyx_k_s_s_s_pos_d[] = "%s : %s -> %s, pos=%d";
+static char __pyx_k_PyWordResult[] = "PyWordResult";
+static char __pyx_k_edit_distance[] = "edit_distance";
+static char __pyx_k_PyEditOperation[] = "PyEditOperation";
+static char __pyx_k_edit_operations[] = "edit_operations";
+static char __pyx_k_PyWordResult___init[] = "PyWordResult.__init__";
+static char __pyx_k_PyEditOperation___str[] = "PyEditOperation.__str__";
+static char __pyx_k_PyEditOperation___init[] = "PyEditOperation.__init__";
+static char __pyx_k_PyEditOperation___repr[] = "PyEditOperation.__repr__";
+static char __pyx_k_alza_model_fuzzy_pydawg[] = "alza.model.fuzzy.pydawg";
+static char __pyx_k_home_vesely_Disk2_Programming_A[] = "/home/vesely/Disk2/Programming/Alza/alza/model/fuzzy/pydawg.pyx";
 static PyObject *__pyx_n_s_Delete;
 static PyObject *__pyx_n_s_Insert;
+static PyObject *__pyx_n_s_PyEditOperation;
+static PyObject *__pyx_n_s_PyEditOperation___init;
+static PyObject *__pyx_n_s_PyEditOperation___repr;
+static PyObject *__pyx_n_s_PyEditOperation___str;
+static PyObject *__pyx_n_s_PyWordResult;
+static PyObject *__pyx_n_s_PyWordResult___init;
 static PyObject *__pyx_n_s_Replace;
 static PyObject *__pyx_kp_s_UTF_8;
 static PyObject *__pyx_kp_s__2;
+static PyObject *__pyx_n_s_alza_model_fuzzy_pydawg;
 static PyObject *__pyx_n_s_author;
 static PyObject *__pyx_n_s_decode;
+static PyObject *__pyx_n_s_doc;
 static PyObject *__pyx_n_s_e_from;
 static PyObject *__pyx_n_s_e_to;
+static PyObject *__pyx_n_s_edit_distance;
+static PyObject *__pyx_n_s_edit_operations;
 static PyObject *__pyx_n_s_fuzziness;
+static PyObject *__pyx_kp_s_home_vesely_Disk2_Programming_A;
+static PyObject *__pyx_n_s_init;
 static PyObject *__pyx_n_s_main;
+static PyObject *__pyx_n_s_metaclass;
+static PyObject *__pyx_n_s_module;
+static PyObject *__pyx_n_s_op;
 static PyObject *__pyx_n_s_operation;
 static PyObject *__pyx_n_s_position;
+static PyObject *__pyx_n_s_prepare;
+static PyObject *__pyx_n_s_qualname;
 static PyObject *__pyx_n_s_range;
+static PyObject *__pyx_n_s_repr;
 static PyObject *__pyx_kp_s_s_s_s_pos_d;
+static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_str;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_vesely;
@@ -804,126 +899,150 @@ static PyObject *__pyx_tuple__5;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__12;
+static PyObject *__pyx_tuple__14;
+static PyObject *__pyx_codeobj__9;
+static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_codeobj__13;
+static PyObject *__pyx_codeobj__15;
 
-/* "alza/model/fuzzy/pydawg.pyx":35
- * cdef class PyWordResult:
- *     cdef WordResult *thisptr
- *     def __cinit__(self):             # <<<<<<<<<<<<<<
- *         pass
- *     def __dealloc__(self):
+/* "alza/model/fuzzy/pydawg.pyx":34
+ * 
+ * class PyWordResult:
+ *     def __init__(self, word, edit_distance, edit_operations):             # <<<<<<<<<<<<<<
+ *         self.word = word
+ *         self.edit_distance = edit_distance
  */
 
 /* Python wrapper */
-static int __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  int __pyx_r;
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__init__(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__init__ = {"__init__", (PyCFunction)__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__init__, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__init__(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_self = 0;
+  PyObject *__pyx_v_word = 0;
+  PyObject *__pyx_v_edit_distance = 0;
+  PyObject *__pyx_v_edit_operations = 0;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
-  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
-    __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
-  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___cinit__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_v_self));
+  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_word,&__pyx_n_s_edit_distance,&__pyx_n_s_edit_operations,0};
+    PyObject* values[4] = {0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_word)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  2:
+        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_edit_distance)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  3:
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_edit_operations)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+    }
+    __pyx_v_self = values[0];
+    __pyx_v_word = values[1];
+    __pyx_v_edit_distance = values[2];
+    __pyx_v_edit_operations = values[3];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyWordResult.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___init__(__pyx_self, __pyx_v_self, __pyx_v_word, __pyx_v_edit_distance, __pyx_v_edit_operations);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___cinit__(CYTHON_UNUSED struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self) {
-  int __pyx_r;
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_word, PyObject *__pyx_v_edit_distance, PyObject *__pyx_v_edit_operations) {
+  PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__", 0);
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* function exit code */
-  __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
+  /* "alza/model/fuzzy/pydawg.pyx":35
+ * class PyWordResult:
+ *     def __init__(self, word, edit_distance, edit_operations):
+ *         self.word = word             # <<<<<<<<<<<<<<
+ *         self.edit_distance = edit_distance
+ *         self.edit_operations = edit_operations
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_word, __pyx_v_word) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-/* "alza/model/fuzzy/pydawg.pyx":37
- *     def __cinit__(self):
- *         pass
- *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
+  /* "alza/model/fuzzy/pydawg.pyx":36
+ *     def __init__(self, word, edit_distance, edit_operations):
+ *         self.word = word
+ *         self.edit_distance = edit_distance             # <<<<<<<<<<<<<<
+ *         self.edit_operations = edit_operations
  * 
  */
-
-/* Python wrapper */
-static void __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
-static void __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_3__dealloc__(PyObject *__pyx_v_self) {
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
-  __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_2__dealloc__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-}
-
-static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_2__dealloc__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self) {
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc__", 0);
-
-  /* "alza/model/fuzzy/pydawg.pyx":38
- *         pass
- *     def __dealloc__(self):
- *         del self.thisptr             # <<<<<<<<<<<<<<
- * 
- *     property word:
- */
-  delete __pyx_v_self->thisptr;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_edit_distance, __pyx_v_edit_distance) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "alza/model/fuzzy/pydawg.pyx":37
- *     def __cinit__(self):
- *         pass
- *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
+ *         self.word = word
+ *         self.edit_distance = edit_distance
+ *         self.edit_operations = edit_operations             # <<<<<<<<<<<<<<
  * 
+ * 
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_edit_operations, __pyx_v_edit_operations) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "alza/model/fuzzy/pydawg.pyx":34
+ * 
+ * class PyWordResult:
+ *     def __init__(self, word, edit_distance, edit_operations):             # <<<<<<<<<<<<<<
+ *         self.word = word
+ *         self.edit_distance = edit_distance
  */
 
   /* function exit code */
-  __Pyx_RefNannyFinishContext();
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":41
- * 
- *     property word:
- *         def __get__(self): return self.thisptr.getWord()             # <<<<<<<<<<<<<<
- *     property edit_distance:
- *         def __get__(self): return self.thisptr.getEditDistance()
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_v_self->thisptr->getWord()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
-
-  /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyWordResult.word.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyWordResult.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -931,484 +1050,160 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word___get
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":43
- *         def __get__(self): return self.thisptr.getWord()
- *     property edit_distance:
- *         def __get__(self): return self.thisptr.getEditDistance()             # <<<<<<<<<<<<<<
- *     property edit_operations:
- *         def __get__(self):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getEditDistance()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyWordResult.edit_distance.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":45
- *         def __get__(self): return self.thisptr.getEditDistance()
- *     property edit_operations:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             ops = self.thisptr.getEditOperations()
- *             operations = []
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_self) {
-  std::vector<EditOperation *>  __pyx_v_ops;
-  PyObject *__pyx_v_operations = NULL;
-  size_t __pyx_v_i;
-  struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_op = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  size_t __pyx_t_2;
-  size_t __pyx_t_3;
-  int __pyx_t_4;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "alza/model/fuzzy/pydawg.pyx":46
- *     property edit_operations:
- *         def __get__(self):
- *             ops = self.thisptr.getEditOperations()             # <<<<<<<<<<<<<<
- *             operations = []
- *             for i in range(ops.size()):
- */
-  __pyx_v_ops = __pyx_v_self->thisptr->getEditOperations();
-
-  /* "alza/model/fuzzy/pydawg.pyx":47
- *         def __get__(self):
- *             ops = self.thisptr.getEditOperations()
- *             operations = []             # <<<<<<<<<<<<<<
- *             for i in range(ops.size()):
- *                 op = PyEditOperation()
- */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_operations = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "alza/model/fuzzy/pydawg.pyx":48
- *             ops = self.thisptr.getEditOperations()
- *             operations = []
- *             for i in range(ops.size()):             # <<<<<<<<<<<<<<
- *                 op = PyEditOperation()
- *                 op.thisptr = ops[i]
- */
-  __pyx_t_2 = __pyx_v_ops.size();
-  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
-    __pyx_v_i = __pyx_t_3;
-
-    /* "alza/model/fuzzy/pydawg.pyx":49
- *             operations = []
- *             for i in range(ops.size()):
- *                 op = PyEditOperation()             # <<<<<<<<<<<<<<
- *                 op.thisptr = ops[i]
- *                 operations.append(op)
- */
-    __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)((PyObject*)__pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyEditOperation)), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_XDECREF_SET(__pyx_v_op, ((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_t_1));
-    __pyx_t_1 = 0;
-
-    /* "alza/model/fuzzy/pydawg.pyx":50
- *             for i in range(ops.size()):
- *                 op = PyEditOperation()
- *                 op.thisptr = ops[i]             # <<<<<<<<<<<<<<
- *                 operations.append(op)
- *             return operations
- */
-    __pyx_v_op->thisptr = (__pyx_v_ops[__pyx_v_i]);
-
-    /* "alza/model/fuzzy/pydawg.pyx":51
- *                 op = PyEditOperation()
- *                 op.thisptr = ops[i]
- *                 operations.append(op)             # <<<<<<<<<<<<<<
- *             return operations
+/* "alza/model/fuzzy/pydawg.pyx":42
+ * class PyEditOperation:
  * 
+ *     def __init__(self, e_from, e_to, position, operation):             # <<<<<<<<<<<<<<
+ *         self.e_from = e_from
+ *         self.e_to = e_to
  */
-    __pyx_t_4 = __Pyx_PyList_Append(__pyx_v_operations, ((PyObject *)__pyx_v_op)); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 51; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__init__(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__init__ = {"__init__", (PyCFunction)__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__init__, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__init__(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_v_self = 0;
+  PyObject *__pyx_v_e_from = 0;
+  PyObject *__pyx_v_e_to = 0;
+  PyObject *__pyx_v_position = 0;
+  PyObject *__pyx_v_operation = 0;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_e_from,&__pyx_n_s_e_to,&__pyx_n_s_position,&__pyx_n_s_operation,0};
+    PyObject* values[5] = {0,0,0,0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_self)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_e_from)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  2:
+        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_e_to)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  3:
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_position)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  4:
+        if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_operation)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, 4); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+    }
+    __pyx_v_self = values[0];
+    __pyx_v_e_from = values[1];
+    __pyx_v_e_to = values[2];
+    __pyx_v_position = values[3];
+    __pyx_v_operation = values[4];
   }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___init__(__pyx_self, __pyx_v_self, __pyx_v_e_from, __pyx_v_e_to, __pyx_v_position, __pyx_v_operation);
 
-  /* "alza/model/fuzzy/pydawg.pyx":52
- *                 op.thisptr = ops[i]
- *                 operations.append(op)
- *             return operations             # <<<<<<<<<<<<<<
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_e_from, PyObject *__pyx_v_e_to, PyObject *__pyx_v_position, PyObject *__pyx_v_operation) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__init__", 0);
+
+  /* "alza/model/fuzzy/pydawg.pyx":43
  * 
- * cdef class PyEditOperation:
+ *     def __init__(self, e_from, e_to, position, operation):
+ *         self.e_from = e_from             # <<<<<<<<<<<<<<
+ *         self.e_to = e_to
+ *         self.position = position
  */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(__pyx_v_operations);
-  __pyx_r = __pyx_v_operations;
-  goto __pyx_L0;
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_e_from, __pyx_v_e_from) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "alza/model/fuzzy/pydawg.pyx":44
+ *     def __init__(self, e_from, e_to, position, operation):
+ *         self.e_from = e_from
+ *         self.e_to = e_to             # <<<<<<<<<<<<<<
+ *         self.position = position
+ *         self.operation = operation
+ */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_e_to, __pyx_v_e_to) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "alza/model/fuzzy/pydawg.pyx":45
- *         def __get__(self): return self.thisptr.getEditDistance()
- *     property edit_operations:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             ops = self.thisptr.getEditOperations()
- *             operations = []
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyWordResult.edit_operations.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_operations);
-  __Pyx_XDECREF((PyObject *)__pyx_v_op);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":56
- * cdef class PyEditOperation:
- *     cdef EditOperation *thisptr
- *     def __cinit__(self):             # <<<<<<<<<<<<<<
- *         pass
- *     def __dealloc__(self):
- */
-
-/* Python wrapper */
-static int __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
-  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
-    __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
-  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___cinit__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation___cinit__(CYTHON_UNUSED struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__", 0);
-
-  /* function exit code */
-  __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":58
- *     def __cinit__(self):
- *         pass
- *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
+ *         self.e_from = e_from
+ *         self.e_to = e_to
+ *         self.position = position             # <<<<<<<<<<<<<<
+ *         self.operation = operation
  * 
  */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_position, __pyx_v_position) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-/* Python wrapper */
-static void __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
-static void __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__dealloc__(PyObject *__pyx_v_self) {
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
-  __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__dealloc__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-}
-
-static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__dealloc__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc__", 0);
-
-  /* "alza/model/fuzzy/pydawg.pyx":59
- *         pass
- *     def __dealloc__(self):
- *         del self.thisptr             # <<<<<<<<<<<<<<
- * 
- *     property e_from:
- */
-  delete __pyx_v_self->thisptr;
-
-  /* "alza/model/fuzzy/pydawg.pyx":58
- *     def __cinit__(self):
- *         pass
- *     def __dealloc__(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
- * 
- */
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":62
- * 
- *     property e_from:
- *         def __get__(self): return (<bytes> self.thisptr.getFrom()).decode("UTF-8") if self.thisptr.getFrom() else ""             # <<<<<<<<<<<<<<
- * 
- *     property e_to:
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  char __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  if ((__pyx_v_self->thisptr->getFrom() != 0)) {
-    __pyx_t_2 = __pyx_v_self->thisptr->getFrom();
-    __pyx_t_3 = PyBytes_FromStringAndSize(&__pyx_t_2, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_decode); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_1 = __pyx_t_3;
-    __pyx_t_3 = 0;
-  } else {
-    __Pyx_INCREF(__pyx_kp_s__2);
-    __pyx_t_1 = __pyx_kp_s__2;
-  }
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.e_from.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":65
- * 
- *     property e_to:
- *         def __get__(self): return (<bytes> self.thisptr.getTo()).decode("UTF-8") if self.thisptr.getTo() else ""             # <<<<<<<<<<<<<<
- * 
- *     property position:
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  char __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  if ((__pyx_v_self->thisptr->getTo() != 0)) {
-    __pyx_t_2 = __pyx_v_self->thisptr->getTo();
-    __pyx_t_3 = PyBytes_FromStringAndSize(&__pyx_t_2, 1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_decode); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_1 = __pyx_t_3;
-    __pyx_t_3 = 0;
-  } else {
-    __Pyx_INCREF(__pyx_kp_s__2);
-    __pyx_t_1 = __pyx_kp_s__2;
-  }
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.e_to.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":68
- * 
- *     property position:
- *         def __get__(self): return self.thisptr.getPos()             # <<<<<<<<<<<<<<
- * 
- *     property operation:
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getPos()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.position.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "alza/model/fuzzy/pydawg.pyx":71
- * 
- *     property operation:
- *         def __get__(self): return self.thisptr.getOp()             # <<<<<<<<<<<<<<
+  /* "alza/model/fuzzy/pydawg.pyx":46
+ *         self.e_to = e_to
+ *         self.position = position
+ *         self.operation = operation             # <<<<<<<<<<<<<<
  * 
  *     def __str__(self):
  */
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_operation, __pyx_v_operation) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 46; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-/* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation___get__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
+  /* "alza/model/fuzzy/pydawg.pyx":42
+ * class PyEditOperation:
+ * 
+ *     def __init__(self, e_from, e_to, position, operation):             # <<<<<<<<<<<<<<
+ *         self.e_from = e_from
+ *         self.e_to = e_to
+ */
 
   /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation___get__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyInt_FromLong(__pyx_v_self->thisptr->getOp()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
-
-  /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.operation.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyEditOperation.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1416,28 +1211,29 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operati
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":73
- *         def __get__(self): return self.thisptr.getOp()
+/* "alza/model/fuzzy/pydawg.pyx":48
+ *         self.operation = operation
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
- *         op='Insert'
- *         if self.operation==DELETE:
+ *         op = 'Insert'
+ *         if self.operation == DELETE:
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__str__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__str__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__str__(PyObject *__pyx_self, PyObject *__pyx_v_self); /*proto*/
+static PyMethodDef __pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__str__ = {"__str__", (PyCFunction)__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__str__, METH_O, 0};
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__str__(PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__str__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
+  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__str__(__pyx_self, ((PyObject *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_2__str__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_v_op = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -1451,40 +1247,40 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":74
+  /* "alza/model/fuzzy/pydawg.pyx":49
  * 
  *     def __str__(self):
- *         op='Insert'             # <<<<<<<<<<<<<<
- *         if self.operation==DELETE:
- *             op='Delete'
+ *         op = 'Insert'             # <<<<<<<<<<<<<<
+ *         if self.operation == DELETE:
+ *             op = 'Delete'
  */
   __Pyx_INCREF(__pyx_n_s_Insert);
   __pyx_v_op = __pyx_n_s_Insert;
 
-  /* "alza/model/fuzzy/pydawg.pyx":75
+  /* "alza/model/fuzzy/pydawg.pyx":50
  *     def __str__(self):
- *         op='Insert'
- *         if self.operation==DELETE:             # <<<<<<<<<<<<<<
- *             op='Delete'
- *         if self.operation==REPLACE:
+ *         op = 'Insert'
+ *         if self.operation == DELETE:             # <<<<<<<<<<<<<<
+ *             op = 'Delete'
+ *         if self.operation == REPLACE:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_operation); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_operation); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyInt_FromLong(DELETE); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyInt_FromLong(DELETE); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 75; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
 
-    /* "alza/model/fuzzy/pydawg.pyx":76
- *         op='Insert'
- *         if self.operation==DELETE:
- *             op='Delete'             # <<<<<<<<<<<<<<
- *         if self.operation==REPLACE:
- *             op='Replace'
+    /* "alza/model/fuzzy/pydawg.pyx":51
+ *         op = 'Insert'
+ *         if self.operation == DELETE:
+ *             op = 'Delete'             # <<<<<<<<<<<<<<
+ *         if self.operation == REPLACE:
+ *             op = 'Replace'
  */
     __Pyx_INCREF(__pyx_n_s_Delete);
     __Pyx_DECREF_SET(__pyx_v_op, __pyx_n_s_Delete);
@@ -1492,28 +1288,28 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
   }
   __pyx_L3:;
 
-  /* "alza/model/fuzzy/pydawg.pyx":77
- *         if self.operation==DELETE:
- *             op='Delete'
- *         if self.operation==REPLACE:             # <<<<<<<<<<<<<<
- *             op='Replace'
+  /* "alza/model/fuzzy/pydawg.pyx":52
+ *         if self.operation == DELETE:
+ *             op = 'Delete'
+ *         if self.operation == REPLACE:             # <<<<<<<<<<<<<<
+ *             op = 'Replace'
  *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_operation); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_operation); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyInt_FromLong(REPLACE); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyInt_FromLong(REPLACE); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyObject_RichCompare(__pyx_t_3, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_3, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 52; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "alza/model/fuzzy/pydawg.pyx":78
- *             op='Delete'
- *         if self.operation==REPLACE:
- *             op='Replace'             # <<<<<<<<<<<<<<
+    /* "alza/model/fuzzy/pydawg.pyx":53
+ *             op = 'Delete'
+ *         if self.operation == REPLACE:
+ *             op = 'Replace'             # <<<<<<<<<<<<<<
  *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
  * 
  */
@@ -1523,21 +1319,21 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
   }
   __pyx_L4:;
 
-  /* "alza/model/fuzzy/pydawg.pyx":79
- *         if self.operation==REPLACE:
- *             op='Replace'
+  /* "alza/model/fuzzy/pydawg.pyx":54
+ *         if self.operation == REPLACE:
+ *             op = 'Replace'
  *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)             # <<<<<<<<<<<<<<
  * 
  *     def __repr__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_e_from); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_e_from); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_e_to); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_e_to); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_position); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_position); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = PyTuple_New(4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyTuple_New(4); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_v_op);
   __Pyx_GIVEREF(__pyx_v_op);
@@ -1551,19 +1347,19 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_s_s_s_pos_d, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyString_Format(__pyx_kp_s_s_s_s_pos_d, __pyx_t_5); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "alza/model/fuzzy/pydawg.pyx":73
- *         def __get__(self): return self.thisptr.getOp()
+  /* "alza/model/fuzzy/pydawg.pyx":48
+ *         self.operation = operation
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
- *         op='Insert'
- *         if self.operation==DELETE:
+ *         op = 'Insert'
+ *         if self.operation == DELETE:
  */
 
   /* function exit code */
@@ -1581,7 +1377,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":81
+/* "alza/model/fuzzy/pydawg.pyx":56
  *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -1590,19 +1386,20 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__str__
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_7__repr__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_7__repr__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self); /*proto*/
+static PyMethodDef __pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__repr__ = {"__repr__", (PyCFunction)__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__repr__, METH_O, 0};
+static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__repr__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr__(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *)__pyx_v_self));
+  __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__repr__(__pyx_self, ((PyObject *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr__(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation *__pyx_v_self) {
+static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4__repr__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1613,15 +1410,15 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":82
+  /* "alza/model/fuzzy/pydawg.pyx":57
  * 
  *     def __repr__(self):
  *         return self.__str__()             # <<<<<<<<<<<<<<
  * 
- * cdef class PyDawg:
+ * cdef to_unicode(char str):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_str); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_str); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 57; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1634,10 +1431,10 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr_
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 57; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 57; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -1645,7 +1442,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr_
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "alza/model/fuzzy/pydawg.pyx":81
+  /* "alza/model/fuzzy/pydawg.pyx":56
  *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -1666,7 +1463,74 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6__repr_
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":86
+/* "alza/model/fuzzy/pydawg.pyx":59
+ *         return self.__str__()
+ * 
+ * cdef to_unicode(char str):             # <<<<<<<<<<<<<<
+ *     return (<bytes> str).decode("UTF-8") if str else ""
+ * 
+ */
+
+static PyObject *__pyx_f_4alza_5model_5fuzzy_6pydawg_to_unicode(char __pyx_v_str) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("to_unicode", 0);
+
+  /* "alza/model/fuzzy/pydawg.pyx":60
+ * 
+ * cdef to_unicode(char str):
+ *     return (<bytes> str).decode("UTF-8") if str else ""             # <<<<<<<<<<<<<<
+ * 
+ * cdef class PyDawg:
+ */
+  __Pyx_XDECREF(__pyx_r);
+  if ((__pyx_v_str != 0)) {
+    __pyx_t_2 = PyBytes_FromStringAndSize(&__pyx_v_str, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_decode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_1 = __pyx_t_2;
+    __pyx_t_2 = 0;
+  } else {
+    __Pyx_INCREF(__pyx_kp_s__2);
+    __pyx_t_1 = __pyx_kp_s__2;
+  }
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":59
+ *         return self.__str__()
+ * 
+ * cdef to_unicode(char str):             # <<<<<<<<<<<<<<
+ *     return (<bytes> str).decode("UTF-8") if str else ""
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("alza.model.fuzzy.pydawg.to_unicode", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "alza/model/fuzzy/pydawg.pyx":64
  * cdef class PyDawg:
  *     cdef Dawg *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -1699,7 +1563,7 @@ static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg___cinit__(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":87
+  /* "alza/model/fuzzy/pydawg.pyx":65
  *     cdef Dawg *thisptr
  *     def __cinit__(self):
  *         self.thisptr = new Dawg()             # <<<<<<<<<<<<<<
@@ -1710,11 +1574,11 @@ static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg___cinit__(struct __pyx_o
     __pyx_t_1 = new Dawg();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "alza/model/fuzzy/pydawg.pyx":86
+  /* "alza/model/fuzzy/pydawg.pyx":64
  * cdef class PyDawg:
  *     cdef Dawg *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -1733,7 +1597,7 @@ static int __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg___cinit__(struct __pyx_o
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":88
+/* "alza/model/fuzzy/pydawg.pyx":66
  *     def __cinit__(self):
  *         self.thisptr = new Dawg()
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -1756,7 +1620,7 @@ static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_2__dealloc__(struct __p
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":89
+  /* "alza/model/fuzzy/pydawg.pyx":67
  *         self.thisptr = new Dawg()
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -1765,7 +1629,7 @@ static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_2__dealloc__(struct __p
  */
   delete __pyx_v_self->thisptr;
 
-  /* "alza/model/fuzzy/pydawg.pyx":88
+  /* "alza/model/fuzzy/pydawg.pyx":66
  *     def __cinit__(self):
  *         self.thisptr = new Dawg()
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -1777,7 +1641,7 @@ static void __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_2__dealloc__(struct __p
   __Pyx_RefNannyFinishContext();
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":90
+/* "alza/model/fuzzy/pydawg.pyx":68
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def insert(self, unicode word):             # <<<<<<<<<<<<<<
@@ -1794,7 +1658,7 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_5insert(PyObject *
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("insert (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_4insert(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *)__pyx_v_self), ((PyObject*)__pyx_v_word));
 
   /* function exit code */
@@ -1818,23 +1682,23 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_4insert(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("insert", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":91
+  /* "alza/model/fuzzy/pydawg.pyx":69
  *         del self.thisptr
  *     def insert(self, unicode word):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.insert(w)
  *     def finish(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_w = __pyx_t_3;
 
-  /* "alza/model/fuzzy/pydawg.pyx":92
+  /* "alza/model/fuzzy/pydawg.pyx":70
  *     def insert(self, unicode word):
  *         cdef string w = word.decode("UTF-8")
  *         self.thisptr.insert(w)             # <<<<<<<<<<<<<<
@@ -1843,7 +1707,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_4insert(struct __p
  */
   __pyx_v_self->thisptr->insert(__pyx_v_w);
 
-  /* "alza/model/fuzzy/pydawg.pyx":90
+  /* "alza/model/fuzzy/pydawg.pyx":68
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def insert(self, unicode word):             # <<<<<<<<<<<<<<
@@ -1865,7 +1729,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_4insert(struct __p
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":93
+/* "alza/model/fuzzy/pydawg.pyx":71
  *         cdef string w = word.decode("UTF-8")
  *         self.thisptr.insert(w)
  *     def finish(self):             # <<<<<<<<<<<<<<
@@ -1891,7 +1755,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_6finish(struct __p
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("finish", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":94
+  /* "alza/model/fuzzy/pydawg.pyx":72
  *         self.thisptr.insert(w)
  *     def finish(self):
  *         self.thisptr.finish()             # <<<<<<<<<<<<<<
@@ -1900,7 +1764,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_6finish(struct __p
  */
   __pyx_v_self->thisptr->finish();
 
-  /* "alza/model/fuzzy/pydawg.pyx":93
+  /* "alza/model/fuzzy/pydawg.pyx":71
  *         cdef string w = word.decode("UTF-8")
  *         self.thisptr.insert(w)
  *     def finish(self):             # <<<<<<<<<<<<<<
@@ -1915,7 +1779,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_6finish(struct __p
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":95
+/* "alza/model/fuzzy/pydawg.pyx":73
  *     def finish(self):
  *         self.thisptr.finish()
  *     def contains(self, unicode word):             # <<<<<<<<<<<<<<
@@ -1932,7 +1796,7 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_9contains(PyObject
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("contains (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *)__pyx_v_self), ((PyObject*)__pyx_v_word));
 
   /* function exit code */
@@ -1957,23 +1821,23 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(struct _
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("contains", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":96
+  /* "alza/model/fuzzy/pydawg.pyx":74
  *         self.thisptr.finish()
  *     def contains(self, unicode word):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         cdef bint result = self.thisptr.contains(w)
  *         return result
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_w = __pyx_t_3;
 
-  /* "alza/model/fuzzy/pydawg.pyx":97
+  /* "alza/model/fuzzy/pydawg.pyx":75
  *     def contains(self, unicode word):
  *         cdef string w = word.decode("UTF-8")
  *         cdef bint result = self.thisptr.contains(w)             # <<<<<<<<<<<<<<
@@ -1982,7 +1846,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(struct _
  */
   __pyx_v_result = __pyx_v_self->thisptr->contains(__pyx_v_w);
 
-  /* "alza/model/fuzzy/pydawg.pyx":98
+  /* "alza/model/fuzzy/pydawg.pyx":76
  *         cdef string w = word.decode("UTF-8")
  *         cdef bint result = self.thisptr.contains(w)
  *         return result             # <<<<<<<<<<<<<<
@@ -1990,13 +1854,13 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(struct _
  *         cdef string w = word.decode("UTF-8")
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_result); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 98; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_v_result); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "alza/model/fuzzy/pydawg.pyx":95
+  /* "alza/model/fuzzy/pydawg.pyx":73
  *     def finish(self):
  *         self.thisptr.finish()
  *     def contains(self, unicode word):             # <<<<<<<<<<<<<<
@@ -2016,12 +1880,12 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_8contains(struct _
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":99
+/* "alza/model/fuzzy/pydawg.pyx":77
  *         cdef bint result = self.thisptr.contains(w)
  *         return result
  *     def fuzzy_search(self, unicode word, int fuzziness):             # <<<<<<<<<<<<<<
  *         cdef string w = word.decode("UTF-8")
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  */
 
 /* Python wrapper */
@@ -2055,11 +1919,11 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_11fuzzy_search(PyO
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_fuzziness)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fuzzy_search") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fuzzy_search") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -2068,17 +1932,17 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_11fuzzy_search(PyO
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
     __pyx_v_word = ((PyObject*)values[0]);
-    __pyx_v_fuzziness = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_fuzziness == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_fuzziness = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_fuzziness == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("fuzzy_search", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyDawg.fuzzy_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_word), (&PyUnicode_Type), 1, "word", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_10fuzzy_search(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *)__pyx_v_self), __pyx_v_word, __pyx_v_fuzziness);
 
   /* function exit code */
@@ -2092,10 +1956,13 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_11fuzzy_search(PyO
 
 static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_10fuzzy_search(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *__pyx_v_self, PyObject *__pyx_v_word, int __pyx_v_fuzziness) {
   std::string __pyx_v_w;
-  std::vector<WordResult *>  __pyx_v_results;
+  std::vector<WordResult>  __pyx_v_results;
   PyObject *__pyx_v_pyres = NULL;
   size_t __pyx_v_i;
-  struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *__pyx_v_res = NULL;
+  std::vector<EditOperation>  __pyx_v_ops;
+  PyObject *__pyx_v_operations = NULL;
+  PyObject *__pyx_v_res = NULL;
+  size_t __pyx_v_j;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2103,93 +1970,246 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_10fuzzy_search(str
   std::string __pyx_t_3;
   size_t __pyx_t_4;
   size_t __pyx_t_5;
-  int __pyx_t_6;
+  size_t __pyx_t_6;
+  size_t __pyx_t_7;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  PyObject *__pyx_t_10 = NULL;
+  PyObject *__pyx_t_11 = NULL;
+  PyObject *__pyx_t_12 = NULL;
+  PyObject *__pyx_t_13 = NULL;
+  Py_ssize_t __pyx_t_14;
+  PyObject *__pyx_t_15 = NULL;
+  int __pyx_t_16;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fuzzy_search", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":100
+  /* "alza/model/fuzzy/pydawg.pyx":78
  *         return result
  *     def fuzzy_search(self, unicode word, int fuzziness):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  *         pyres = []
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_word, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_w = __pyx_t_3;
 
-  /* "alza/model/fuzzy/pydawg.pyx":101
+  /* "alza/model/fuzzy/pydawg.pyx":79
  *     def fuzzy_search(self, unicode word, int fuzziness):
  *         cdef string w = word.decode("UTF-8")
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)             # <<<<<<<<<<<<<<
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)             # <<<<<<<<<<<<<<
  *         pyres = []
  *         for i in range(results.size()):
  */
   __pyx_v_results = __pyx_v_self->thisptr->fuzzy_search(__pyx_v_w, __pyx_v_fuzziness);
 
-  /* "alza/model/fuzzy/pydawg.pyx":102
+  /* "alza/model/fuzzy/pydawg.pyx":80
  *         cdef string w = word.decode("UTF-8")
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  *         pyres = []             # <<<<<<<<<<<<<<
  *         for i in range(results.size()):
- *             res = PyWordResult()
+ *             ops = results[i].getEditOperations()
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 80; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_pyres = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "alza/model/fuzzy/pydawg.pyx":103
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+  /* "alza/model/fuzzy/pydawg.pyx":81
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  *         pyres = []
  *         for i in range(results.size()):             # <<<<<<<<<<<<<<
- *             res = PyWordResult()
- *             res.thisptr = results[i]
+ *             ops = results[i].getEditOperations()
+ *             operations = [
  */
   __pyx_t_4 = __pyx_v_results.size();
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "alza/model/fuzzy/pydawg.pyx":104
+    /* "alza/model/fuzzy/pydawg.pyx":82
  *         pyres = []
  *         for i in range(results.size()):
- *             res = PyWordResult()             # <<<<<<<<<<<<<<
- *             res.thisptr = results[i]
+ *             ops = results[i].getEditOperations()             # <<<<<<<<<<<<<<
+ *             operations = [
+ *                 PyEditOperation(
+ */
+    __pyx_v_ops = (__pyx_v_results[__pyx_v_i]).getEditOperations();
+
+    /* "alza/model/fuzzy/pydawg.pyx":83
+ *         for i in range(results.size()):
+ *             ops = results[i].getEditOperations()
+ *             operations = [             # <<<<<<<<<<<<<<
+ *                 PyEditOperation(
+ *                     to_unicode(ops[j].getFrom()),
+ */
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+
+    /* "alza/model/fuzzy/pydawg.pyx":88
+ *                     to_unicode(ops[j].getTo()),
+ *                     ops[j].getPos(),
+ *                     ops[j].getOp()) for j in range(ops.size())]             # <<<<<<<<<<<<<<
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)
  *             pyres.append(res)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject*)__pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyWordResult)), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 104; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_XDECREF_SET(__pyx_v_res, ((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult *)__pyx_t_2));
+    __pyx_t_6 = __pyx_v_ops.size();
+    for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
+      __pyx_v_j = __pyx_t_7;
+
+      /* "alza/model/fuzzy/pydawg.pyx":84
+ *             ops = results[i].getEditOperations()
+ *             operations = [
+ *                 PyEditOperation(             # <<<<<<<<<<<<<<
+ *                     to_unicode(ops[j].getFrom()),
+ *                     to_unicode(ops[j].getTo()),
+ */
+      __pyx_t_8 = __Pyx_GetModuleGlobalName(__pyx_n_s_PyEditOperation); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_8);
+
+      /* "alza/model/fuzzy/pydawg.pyx":85
+ *             operations = [
+ *                 PyEditOperation(
+ *                     to_unicode(ops[j].getFrom()),             # <<<<<<<<<<<<<<
+ *                     to_unicode(ops[j].getTo()),
+ *                     ops[j].getPos(),
+ */
+      __pyx_t_9 = __pyx_f_4alza_5model_5fuzzy_6pydawg_to_unicode((__pyx_v_ops[__pyx_v_j]).getFrom()); if (unlikely(!__pyx_t_9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_9);
+
+      /* "alza/model/fuzzy/pydawg.pyx":86
+ *                 PyEditOperation(
+ *                     to_unicode(ops[j].getFrom()),
+ *                     to_unicode(ops[j].getTo()),             # <<<<<<<<<<<<<<
+ *                     ops[j].getPos(),
+ *                     ops[j].getOp()) for j in range(ops.size())]
+ */
+      __pyx_t_10 = __pyx_f_4alza_5model_5fuzzy_6pydawg_to_unicode((__pyx_v_ops[__pyx_v_j]).getTo()); if (unlikely(!__pyx_t_10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_10);
+
+      /* "alza/model/fuzzy/pydawg.pyx":87
+ *                     to_unicode(ops[j].getFrom()),
+ *                     to_unicode(ops[j].getTo()),
+ *                     ops[j].getPos(),             # <<<<<<<<<<<<<<
+ *                     ops[j].getOp()) for j in range(ops.size())]
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)
+ */
+      __pyx_t_11 = __Pyx_PyInt_From_int((__pyx_v_ops[__pyx_v_j]).getPos()); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_11);
+
+      /* "alza/model/fuzzy/pydawg.pyx":88
+ *                     to_unicode(ops[j].getTo()),
+ *                     ops[j].getPos(),
+ *                     ops[j].getOp()) for j in range(ops.size())]             # <<<<<<<<<<<<<<
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)
+ *             pyres.append(res)
+ */
+      __pyx_t_12 = PyInt_FromLong((__pyx_v_ops[__pyx_v_j]).getOp()); if (unlikely(!__pyx_t_12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_12);
+      __pyx_t_13 = NULL;
+      __pyx_t_14 = 0;
+      if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_8))) {
+        __pyx_t_13 = PyMethod_GET_SELF(__pyx_t_8);
+        if (likely(__pyx_t_13)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+          __Pyx_INCREF(__pyx_t_13);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_8, function);
+          __pyx_t_14 = 1;
+        }
+      }
+      __pyx_t_15 = PyTuple_New(4+__pyx_t_14); if (unlikely(!__pyx_t_15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_15);
+      if (__pyx_t_13) {
+        __Pyx_GIVEREF(__pyx_t_13); PyTuple_SET_ITEM(__pyx_t_15, 0, __pyx_t_13); __pyx_t_13 = NULL;
+      }
+      __Pyx_GIVEREF(__pyx_t_9);
+      PyTuple_SET_ITEM(__pyx_t_15, 0+__pyx_t_14, __pyx_t_9);
+      __Pyx_GIVEREF(__pyx_t_10);
+      PyTuple_SET_ITEM(__pyx_t_15, 1+__pyx_t_14, __pyx_t_10);
+      __Pyx_GIVEREF(__pyx_t_11);
+      PyTuple_SET_ITEM(__pyx_t_15, 2+__pyx_t_14, __pyx_t_11);
+      __Pyx_GIVEREF(__pyx_t_12);
+      PyTuple_SET_ITEM(__pyx_t_15, 3+__pyx_t_14, __pyx_t_12);
+      __pyx_t_9 = 0;
+      __pyx_t_10 = 0;
+      __pyx_t_11 = 0;
+      __pyx_t_12 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_15, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    }
+    __Pyx_XDECREF_SET(__pyx_v_operations, ((PyObject*)__pyx_t_2));
     __pyx_t_2 = 0;
 
-    /* "alza/model/fuzzy/pydawg.pyx":105
- *         for i in range(results.size()):
- *             res = PyWordResult()
- *             res.thisptr = results[i]             # <<<<<<<<<<<<<<
+    /* "alza/model/fuzzy/pydawg.pyx":89
+ *                     ops[j].getPos(),
+ *                     ops[j].getOp()) for j in range(ops.size())]
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)             # <<<<<<<<<<<<<<
  *             pyres.append(res)
  *         return pyres
  */
-    __pyx_v_res->thisptr = (__pyx_v_results[__pyx_v_i]);
+    __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_PyWordResult); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_8 = __pyx_convert_PyBytes_string_to_py_std__in_string((__pyx_v_results[__pyx_v_i]).getWord()); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_15 = __Pyx_PyInt_From_int((__pyx_v_results[__pyx_v_i]).getEditDistance()); if (unlikely(!__pyx_t_15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_15);
+    __pyx_t_12 = NULL;
+    __pyx_t_14 = 0;
+    if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_12 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_12)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_12);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
+        __pyx_t_14 = 1;
+      }
+    }
+    __pyx_t_11 = PyTuple_New(3+__pyx_t_14); if (unlikely(!__pyx_t_11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_11);
+    if (__pyx_t_12) {
+      __Pyx_GIVEREF(__pyx_t_12); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_12); __pyx_t_12 = NULL;
+    }
+    __Pyx_GIVEREF(__pyx_t_8);
+    PyTuple_SET_ITEM(__pyx_t_11, 0+__pyx_t_14, __pyx_t_8);
+    __Pyx_GIVEREF(__pyx_t_15);
+    PyTuple_SET_ITEM(__pyx_t_11, 1+__pyx_t_14, __pyx_t_15);
+    __Pyx_INCREF(__pyx_v_operations);
+    __Pyx_GIVEREF(__pyx_v_operations);
+    PyTuple_SET_ITEM(__pyx_t_11, 2+__pyx_t_14, __pyx_v_operations);
+    __pyx_t_8 = 0;
+    __pyx_t_15 = 0;
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_11, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_res, __pyx_t_2);
+    __pyx_t_2 = 0;
 
-    /* "alza/model/fuzzy/pydawg.pyx":106
- *             res = PyWordResult()
- *             res.thisptr = results[i]
+    /* "alza/model/fuzzy/pydawg.pyx":90
+ *                     ops[j].getOp()) for j in range(ops.size())]
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)
  *             pyres.append(res)             # <<<<<<<<<<<<<<
  *         return pyres
  *     def load(self, unicode filename):
  */
-    __pyx_t_6 = __Pyx_PyList_Append(__pyx_v_pyres, ((PyObject *)__pyx_v_res)); if (unlikely(__pyx_t_6 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 106; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_16 = __Pyx_PyList_Append(__pyx_v_pyres, __pyx_v_res); if (unlikely(__pyx_t_16 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "alza/model/fuzzy/pydawg.pyx":107
- *             res.thisptr = results[i]
+  /* "alza/model/fuzzy/pydawg.pyx":91
+ *             res = PyWordResult(results[i].getWord(), results[i].getEditDistance(), operations)
  *             pyres.append(res)
  *         return pyres             # <<<<<<<<<<<<<<
  *     def load(self, unicode filename):
@@ -2200,29 +2220,37 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_10fuzzy_search(str
   __pyx_r = __pyx_v_pyres;
   goto __pyx_L0;
 
-  /* "alza/model/fuzzy/pydawg.pyx":99
+  /* "alza/model/fuzzy/pydawg.pyx":77
  *         cdef bint result = self.thisptr.contains(w)
  *         return result
  *     def fuzzy_search(self, unicode word, int fuzziness):             # <<<<<<<<<<<<<<
  *         cdef string w = word.decode("UTF-8")
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  */
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_10);
+  __Pyx_XDECREF(__pyx_t_11);
+  __Pyx_XDECREF(__pyx_t_12);
+  __Pyx_XDECREF(__pyx_t_13);
+  __Pyx_XDECREF(__pyx_t_15);
   __Pyx_AddTraceback("alza.model.fuzzy.pydawg.PyDawg.fuzzy_search", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pyres);
-  __Pyx_XDECREF((PyObject *)__pyx_v_res);
+  __Pyx_XDECREF(__pyx_v_operations);
+  __Pyx_XDECREF(__pyx_v_res);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":108
+/* "alza/model/fuzzy/pydawg.pyx":92
  *             pyres.append(res)
  *         return pyres
  *     def load(self, unicode filename):             # <<<<<<<<<<<<<<
@@ -2239,7 +2267,7 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_13load(PyObject *_
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("load (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 92; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_12load(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *)__pyx_v_self), ((PyObject*)__pyx_v_filename));
 
   /* function exit code */
@@ -2263,23 +2291,23 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_12load(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("load", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":109
+  /* "alza/model/fuzzy/pydawg.pyx":93
  *         return pyres
  *     def load(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_filename, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_filename, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_f = __pyx_t_3;
 
-  /* "alza/model/fuzzy/pydawg.pyx":110
+  /* "alza/model/fuzzy/pydawg.pyx":94
  *     def load(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")
  *         self.thisptr.load(f)             # <<<<<<<<<<<<<<
@@ -2288,7 +2316,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_12load(struct __py
  */
   __pyx_v_self->thisptr->load(__pyx_v_f);
 
-  /* "alza/model/fuzzy/pydawg.pyx":108
+  /* "alza/model/fuzzy/pydawg.pyx":92
  *             pyres.append(res)
  *         return pyres
  *     def load(self, unicode filename):             # <<<<<<<<<<<<<<
@@ -2310,7 +2338,7 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_12load(struct __py
   return __pyx_r;
 }
 
-/* "alza/model/fuzzy/pydawg.pyx":111
+/* "alza/model/fuzzy/pydawg.pyx":95
  *         cdef string f = filename.decode("UTF-8")
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):             # <<<<<<<<<<<<<<
@@ -2327,7 +2355,7 @@ static PyObject *__pyx_pw_4alza_5model_5fuzzy_6pydawg_6PyDawg_15save(PyObject *_
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("save (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_filename), (&PyUnicode_Type), 1, "filename", 1))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_14save(((struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyDawg *)__pyx_v_self), ((PyObject*)__pyx_v_filename));
 
   /* function exit code */
@@ -2351,29 +2379,29 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_14save(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("save", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":112
+  /* "alza/model/fuzzy/pydawg.pyx":96
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.save(f)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_filename, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_filename, __pyx_n_s_decode); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_f = __pyx_t_3;
 
-  /* "alza/model/fuzzy/pydawg.pyx":113
+  /* "alza/model/fuzzy/pydawg.pyx":97
  *     def save(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")
  *         self.thisptr.save(f)             # <<<<<<<<<<<<<<
  */
   __pyx_v_self->thisptr->save(__pyx_v_f);
 
-  /* "alza/model/fuzzy/pydawg.pyx":111
+  /* "alza/model/fuzzy/pydawg.pyx":95
  *         cdef string f = filename.decode("UTF-8")
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):             # <<<<<<<<<<<<<<
@@ -2391,6 +2419,61 @@ static PyObject *__pyx_pf_4alza_5model_5fuzzy_6pydawg_6PyDawg_14save(struct __py
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.from_py":13
+ * 
+ * @cname("__pyx_convert_string_from_py_std__in_string")
+ * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t length
+ *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ */
+
+static std::string __pyx_convert_string_from_py_std__in_string(PyObject *__pyx_v_o) {
+  Py_ssize_t __pyx_v_length;
+  char *__pyx_v_data;
+  std::string __pyx_r;
+  __Pyx_RefNannyDeclarations
+  char *__pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__pyx_convert_string_from_py_std__in_string", 0);
+
+  /* "string.from_py":15
+ * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:
+ *     cdef Py_ssize_t length
+ *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)             # <<<<<<<<<<<<<<
+ *     return string(data, length)
+ * 
+ */
+  __pyx_t_1 = __Pyx_PyObject_AsStringAndSize(__pyx_v_o, (&__pyx_v_length)); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_data = __pyx_t_1;
+
+  /* "string.from_py":16
+ *     cdef Py_ssize_t length
+ *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ *     return string(data, length)             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = std::string(__pyx_v_data, __pyx_v_length);
+  goto __pyx_L0;
+
+  /* "string.from_py":13
+ * 
+ * @cname("__pyx_convert_string_from_py_std__in_string")
+ * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
+ *     cdef Py_ssize_t length
+ *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("string.from_py.__pyx_convert_string_from_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -2644,288 +2727,6 @@ static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_st
   return __pyx_r;
 }
 
-/* "string.from_py":13
- * 
- * @cname("__pyx_convert_string_from_py_std__in_string")
- * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t length
- *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
- */
-
-static std::string __pyx_convert_string_from_py_std__in_string(PyObject *__pyx_v_o) {
-  Py_ssize_t __pyx_v_length;
-  char *__pyx_v_data;
-  std::string __pyx_r;
-  __Pyx_RefNannyDeclarations
-  char *__pyx_t_1;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__pyx_convert_string_from_py_std__in_string", 0);
-
-  /* "string.from_py":15
- * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:
- *     cdef Py_ssize_t length
- *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)             # <<<<<<<<<<<<<<
- *     return string(data, length)
- * 
- */
-  __pyx_t_1 = __Pyx_PyObject_AsStringAndSize(__pyx_v_o, (&__pyx_v_length)); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_data = __pyx_t_1;
-
-  /* "string.from_py":16
- *     cdef Py_ssize_t length
- *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
- *     return string(data, length)             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __pyx_r = std::string(__pyx_v_data, __pyx_v_length);
-  goto __pyx_L0;
-
-  /* "string.from_py":13
- * 
- * @cname("__pyx_convert_string_from_py_std__in_string")
- * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t length
- *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("string.from_py.__pyx_convert_string_from_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyWordResult(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
-  PyObject *o;
-  if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
-    o = (*t->tp_alloc)(t, 0);
-  } else {
-    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
-  }
-  if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
-    Py_DECREF(o); o = 0;
-  }
-  return o;
-}
-
-static void __pyx_tp_dealloc_4alza_5model_5fuzzy_6pydawg_PyWordResult(PyObject *o) {
-  #if PY_VERSION_HEX >= 0x030400a1
-  if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
-    if (PyObject_CallFinalizerFromDealloc(o)) return;
-  }
-  #endif
-  {
-    PyObject *etype, *eval, *etb;
-    PyErr_Fetch(&etype, &eval, &etb);
-    ++Py_REFCNT(o);
-    __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_3__dealloc__(o);
-    --Py_REFCNT(o);
-    PyErr_Restore(etype, eval, etb);
-  }
-  (*Py_TYPE(o)->tp_free)(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_word(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_4word_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_edit_distance(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_13edit_distance_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_edit_operations(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_12PyWordResult_15edit_operations_1__get__(o);
-}
-
-static PyMethodDef __pyx_methods_4alza_5model_5fuzzy_6pydawg_PyWordResult[] = {
-  {0, 0, 0, 0}
-};
-
-static struct PyGetSetDef __pyx_getsets_4alza_5model_5fuzzy_6pydawg_PyWordResult[] = {
-  {(char *)"word", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_word, 0, 0, 0},
-  {(char *)"edit_distance", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_edit_distance, 0, 0, 0},
-  {(char *)"edit_operations", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_12PyWordResult_edit_operations, 0, 0, 0},
-  {0, 0, 0, 0, 0}
-};
-
-static PyTypeObject __pyx_type_4alza_5model_5fuzzy_6pydawg_PyWordResult = {
-  PyVarObject_HEAD_INIT(0, 0)
-  "alza.model.fuzzy.pydawg.PyWordResult", /*tp_name*/
-  sizeof(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyWordResult), /*tp_basicsize*/
-  0, /*tp_itemsize*/
-  __pyx_tp_dealloc_4alza_5model_5fuzzy_6pydawg_PyWordResult, /*tp_dealloc*/
-  0, /*tp_print*/
-  0, /*tp_getattr*/
-  0, /*tp_setattr*/
-  #if PY_MAJOR_VERSION < 3
-  0, /*tp_compare*/
-  #else
-  0, /*reserved*/
-  #endif
-  0, /*tp_repr*/
-  0, /*tp_as_number*/
-  0, /*tp_as_sequence*/
-  0, /*tp_as_mapping*/
-  0, /*tp_hash*/
-  0, /*tp_call*/
-  0, /*tp_str*/
-  0, /*tp_getattro*/
-  0, /*tp_setattro*/
-  0, /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  0, /*tp_doc*/
-  0, /*tp_traverse*/
-  0, /*tp_clear*/
-  0, /*tp_richcompare*/
-  0, /*tp_weaklistoffset*/
-  0, /*tp_iter*/
-  0, /*tp_iternext*/
-  __pyx_methods_4alza_5model_5fuzzy_6pydawg_PyWordResult, /*tp_methods*/
-  0, /*tp_members*/
-  __pyx_getsets_4alza_5model_5fuzzy_6pydawg_PyWordResult, /*tp_getset*/
-  0, /*tp_base*/
-  0, /*tp_dict*/
-  0, /*tp_descr_get*/
-  0, /*tp_descr_set*/
-  0, /*tp_dictoffset*/
-  0, /*tp_init*/
-  0, /*tp_alloc*/
-  __pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyWordResult, /*tp_new*/
-  0, /*tp_free*/
-  0, /*tp_is_gc*/
-  0, /*tp_bases*/
-  0, /*tp_mro*/
-  0, /*tp_cache*/
-  0, /*tp_subclasses*/
-  0, /*tp_weaklist*/
-  0, /*tp_del*/
-  0, /*tp_version_tag*/
-  #if PY_VERSION_HEX >= 0x030400a1
-  0, /*tp_finalize*/
-  #endif
-};
-
-static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyEditOperation(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
-  PyObject *o;
-  if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
-    o = (*t->tp_alloc)(t, 0);
-  } else {
-    o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
-  }
-  if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
-    Py_DECREF(o); o = 0;
-  }
-  return o;
-}
-
-static void __pyx_tp_dealloc_4alza_5model_5fuzzy_6pydawg_PyEditOperation(PyObject *o) {
-  #if PY_VERSION_HEX >= 0x030400a1
-  if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
-    if (PyObject_CallFinalizerFromDealloc(o)) return;
-  }
-  #endif
-  {
-    PyObject *etype, *eval, *etb;
-    PyErr_Fetch(&etype, &eval, &etb);
-    ++Py_REFCNT(o);
-    __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__dealloc__(o);
-    --Py_REFCNT(o);
-    PyErr_Restore(etype, eval, etb);
-  }
-  (*Py_TYPE(o)->tp_free)(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_e_from(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_6e_from_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_e_to(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_4e_to_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_position(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_8position_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_operation(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_9operation_1__get__(o);
-}
-
-static PyMethodDef __pyx_methods_4alza_5model_5fuzzy_6pydawg_PyEditOperation[] = {
-  {0, 0, 0, 0}
-};
-
-static struct PyGetSetDef __pyx_getsets_4alza_5model_5fuzzy_6pydawg_PyEditOperation[] = {
-  {(char *)"e_from", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_e_from, 0, 0, 0},
-  {(char *)"e_to", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_e_to, 0, 0, 0},
-  {(char *)"position", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_position, 0, 0, 0},
-  {(char *)"operation", __pyx_getprop_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_operation, 0, 0, 0},
-  {0, 0, 0, 0, 0}
-};
-
-static PyTypeObject __pyx_type_4alza_5model_5fuzzy_6pydawg_PyEditOperation = {
-  PyVarObject_HEAD_INIT(0, 0)
-  "alza.model.fuzzy.pydawg.PyEditOperation", /*tp_name*/
-  sizeof(struct __pyx_obj_4alza_5model_5fuzzy_6pydawg_PyEditOperation), /*tp_basicsize*/
-  0, /*tp_itemsize*/
-  __pyx_tp_dealloc_4alza_5model_5fuzzy_6pydawg_PyEditOperation, /*tp_dealloc*/
-  0, /*tp_print*/
-  0, /*tp_getattr*/
-  0, /*tp_setattr*/
-  #if PY_MAJOR_VERSION < 3
-  0, /*tp_compare*/
-  #else
-  0, /*reserved*/
-  #endif
-  __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_7__repr__, /*tp_repr*/
-  0, /*tp_as_number*/
-  0, /*tp_as_sequence*/
-  0, /*tp_as_mapping*/
-  0, /*tp_hash*/
-  0, /*tp_call*/
-  __pyx_pw_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__str__, /*tp_str*/
-  0, /*tp_getattro*/
-  0, /*tp_setattro*/
-  0, /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
-  0, /*tp_doc*/
-  0, /*tp_traverse*/
-  0, /*tp_clear*/
-  0, /*tp_richcompare*/
-  0, /*tp_weaklistoffset*/
-  0, /*tp_iter*/
-  0, /*tp_iternext*/
-  __pyx_methods_4alza_5model_5fuzzy_6pydawg_PyEditOperation, /*tp_methods*/
-  0, /*tp_members*/
-  __pyx_getsets_4alza_5model_5fuzzy_6pydawg_PyEditOperation, /*tp_getset*/
-  0, /*tp_base*/
-  0, /*tp_dict*/
-  0, /*tp_descr_get*/
-  0, /*tp_descr_set*/
-  0, /*tp_dictoffset*/
-  0, /*tp_init*/
-  0, /*tp_alloc*/
-  __pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyEditOperation, /*tp_new*/
-  0, /*tp_free*/
-  0, /*tp_is_gc*/
-  0, /*tp_bases*/
-  0, /*tp_mro*/
-  0, /*tp_cache*/
-  0, /*tp_subclasses*/
-  0, /*tp_weaklist*/
-  0, /*tp_del*/
-  0, /*tp_version_tag*/
-  #if PY_VERSION_HEX >= 0x030400a1
-  0, /*tp_finalize*/
-  #endif
-};
-
 static PyObject *__pyx_tp_new_4alza_5model_5fuzzy_6pydawg_PyDawg(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
@@ -3049,19 +2850,38 @@ static struct PyModuleDef __pyx_moduledef = {
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Delete, __pyx_k_Delete, sizeof(__pyx_k_Delete), 0, 0, 1, 1},
   {&__pyx_n_s_Insert, __pyx_k_Insert, sizeof(__pyx_k_Insert), 0, 0, 1, 1},
+  {&__pyx_n_s_PyEditOperation, __pyx_k_PyEditOperation, sizeof(__pyx_k_PyEditOperation), 0, 0, 1, 1},
+  {&__pyx_n_s_PyEditOperation___init, __pyx_k_PyEditOperation___init, sizeof(__pyx_k_PyEditOperation___init), 0, 0, 1, 1},
+  {&__pyx_n_s_PyEditOperation___repr, __pyx_k_PyEditOperation___repr, sizeof(__pyx_k_PyEditOperation___repr), 0, 0, 1, 1},
+  {&__pyx_n_s_PyEditOperation___str, __pyx_k_PyEditOperation___str, sizeof(__pyx_k_PyEditOperation___str), 0, 0, 1, 1},
+  {&__pyx_n_s_PyWordResult, __pyx_k_PyWordResult, sizeof(__pyx_k_PyWordResult), 0, 0, 1, 1},
+  {&__pyx_n_s_PyWordResult___init, __pyx_k_PyWordResult___init, sizeof(__pyx_k_PyWordResult___init), 0, 0, 1, 1},
   {&__pyx_n_s_Replace, __pyx_k_Replace, sizeof(__pyx_k_Replace), 0, 0, 1, 1},
   {&__pyx_kp_s_UTF_8, __pyx_k_UTF_8, sizeof(__pyx_k_UTF_8), 0, 0, 1, 0},
   {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
+  {&__pyx_n_s_alza_model_fuzzy_pydawg, __pyx_k_alza_model_fuzzy_pydawg, sizeof(__pyx_k_alza_model_fuzzy_pydawg), 0, 0, 1, 1},
   {&__pyx_n_s_author, __pyx_k_author, sizeof(__pyx_k_author), 0, 0, 1, 1},
   {&__pyx_n_s_decode, __pyx_k_decode, sizeof(__pyx_k_decode), 0, 0, 1, 1},
+  {&__pyx_n_s_doc, __pyx_k_doc, sizeof(__pyx_k_doc), 0, 0, 1, 1},
   {&__pyx_n_s_e_from, __pyx_k_e_from, sizeof(__pyx_k_e_from), 0, 0, 1, 1},
   {&__pyx_n_s_e_to, __pyx_k_e_to, sizeof(__pyx_k_e_to), 0, 0, 1, 1},
+  {&__pyx_n_s_edit_distance, __pyx_k_edit_distance, sizeof(__pyx_k_edit_distance), 0, 0, 1, 1},
+  {&__pyx_n_s_edit_operations, __pyx_k_edit_operations, sizeof(__pyx_k_edit_operations), 0, 0, 1, 1},
   {&__pyx_n_s_fuzziness, __pyx_k_fuzziness, sizeof(__pyx_k_fuzziness), 0, 0, 1, 1},
+  {&__pyx_kp_s_home_vesely_Disk2_Programming_A, __pyx_k_home_vesely_Disk2_Programming_A, sizeof(__pyx_k_home_vesely_Disk2_Programming_A), 0, 0, 1, 0},
+  {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
+  {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
+  {&__pyx_n_s_module, __pyx_k_module, sizeof(__pyx_k_module), 0, 0, 1, 1},
+  {&__pyx_n_s_op, __pyx_k_op, sizeof(__pyx_k_op), 0, 0, 1, 1},
   {&__pyx_n_s_operation, __pyx_k_operation, sizeof(__pyx_k_operation), 0, 0, 1, 1},
   {&__pyx_n_s_position, __pyx_k_position, sizeof(__pyx_k_position), 0, 0, 1, 1},
+  {&__pyx_n_s_prepare, __pyx_k_prepare, sizeof(__pyx_k_prepare), 0, 0, 1, 1},
+  {&__pyx_n_s_qualname, __pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
+  {&__pyx_n_s_repr, __pyx_k_repr, sizeof(__pyx_k_repr), 0, 0, 1, 1},
   {&__pyx_kp_s_s_s_s_pos_d, __pyx_k_s_s_s_pos_d, sizeof(__pyx_k_s_s_s_pos_d), 0, 0, 1, 0},
+  {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_str, __pyx_k_str, sizeof(__pyx_k_str), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_vesely, __pyx_k_vesely, sizeof(__pyx_k_vesely), 0, 0, 1, 1},
@@ -3069,7 +2889,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3079,81 +2899,118 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "alza/model/fuzzy/pydawg.pyx":62
+  /* "alza/model/fuzzy/pydawg.pyx":60
  * 
- *     property e_from:
- *         def __get__(self): return (<bytes> self.thisptr.getFrom()).decode("UTF-8") if self.thisptr.getFrom() else ""             # <<<<<<<<<<<<<<
+ * cdef to_unicode(char str):
+ *     return (<bytes> str).decode("UTF-8") if str else ""             # <<<<<<<<<<<<<<
  * 
- *     property e_to:
+ * cdef class PyDawg:
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "alza/model/fuzzy/pydawg.pyx":65
- * 
- *     property e_to:
- *         def __get__(self): return (<bytes> self.thisptr.getTo()).decode("UTF-8") if self.thisptr.getTo() else ""             # <<<<<<<<<<<<<<
- * 
- *     property position:
- */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
-
-  /* "alza/model/fuzzy/pydawg.pyx":91
+  /* "alza/model/fuzzy/pydawg.pyx":69
  *         del self.thisptr
  *     def insert(self, unicode word):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.insert(w)
  *     def finish(self):
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__3);
+  __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "alza/model/fuzzy/pydawg.pyx":96
+  /* "alza/model/fuzzy/pydawg.pyx":74
  *         self.thisptr.finish()
  *     def contains(self, unicode word):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         cdef bint result = self.thisptr.contains(w)
  *         return result
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__4);
+  __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "alza/model/fuzzy/pydawg.pyx":100
+  /* "alza/model/fuzzy/pydawg.pyx":78
  *         return result
  *     def fuzzy_search(self, unicode word, int fuzziness):
  *         cdef string w = word.decode("UTF-8")             # <<<<<<<<<<<<<<
- *         cdef vector[WordResult*] results = self.thisptr.fuzzy_search(w, fuzziness)
+ *         cdef vector[WordResult] results = self.thisptr.fuzzy_search(w, fuzziness)
  *         pyres = []
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__6);
-  __Pyx_GIVEREF(__pyx_tuple__6);
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "alza/model/fuzzy/pydawg.pyx":109
+  /* "alza/model/fuzzy/pydawg.pyx":93
  *         return pyres
  *     def load(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "alza/model/fuzzy/pydawg.pyx":112
+  /* "alza/model/fuzzy/pydawg.pyx":96
  *         self.thisptr.load(f)
  *     def save(self, unicode filename):
  *         cdef string f = filename.decode("UTF-8")             # <<<<<<<<<<<<<<
  *         self.thisptr.save(f)
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_UTF_8); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+
+  /* "alza/model/fuzzy/pydawg.pyx":34
+ * 
+ * class PyWordResult:
+ *     def __init__(self, word, edit_distance, edit_operations):             # <<<<<<<<<<<<<<
+ *         self.word = word
+ *         self.edit_distance = edit_distance
+ */
+  __pyx_tuple__8 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_word, __pyx_n_s_edit_distance, __pyx_n_s_edit_operations); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(4, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_vesely_Disk2_Programming_A, __pyx_n_s_init, 34, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "alza/model/fuzzy/pydawg.pyx":42
+ * class PyEditOperation:
+ * 
+ *     def __init__(self, e_from, e_to, position, operation):             # <<<<<<<<<<<<<<
+ *         self.e_from = e_from
+ *         self.e_to = e_to
+ */
+  __pyx_tuple__10 = PyTuple_Pack(5, __pyx_n_s_self, __pyx_n_s_e_from, __pyx_n_s_e_to, __pyx_n_s_position, __pyx_n_s_operation); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__10);
+  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_vesely_Disk2_Programming_A, __pyx_n_s_init, 42, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "alza/model/fuzzy/pydawg.pyx":48
+ *         self.operation = operation
+ * 
+ *     def __str__(self):             # <<<<<<<<<<<<<<
+ *         op = 'Insert'
+ *         if self.operation == DELETE:
+ */
+  __pyx_tuple__12 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_op); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__12, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_vesely_Disk2_Programming_A, __pyx_n_s_str, 48, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "alza/model/fuzzy/pydawg.pyx":56
+ *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
+ * 
+ *     def __repr__(self):             # <<<<<<<<<<<<<<
+ *         return self.__str__()
+ * 
+ */
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__14)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_vesely_Disk2_Programming_A, __pyx_n_s_repr, 56, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -3177,6 +3034,7 @@ PyMODINIT_FUNC PyInit_pydawg(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -3248,17 +3106,9 @@ PyMODINIT_FUNC PyInit_pydawg(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyWordResult) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_4alza_5model_5fuzzy_6pydawg_PyWordResult.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "PyWordResult", (PyObject *)&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyWordResult) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyWordResult = &__pyx_type_4alza_5model_5fuzzy_6pydawg_PyWordResult;
-  if (PyType_Ready(&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyEditOperation) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_4alza_5model_5fuzzy_6pydawg_PyEditOperation.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "PyEditOperation", (PyObject *)&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyEditOperation) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyEditOperation = &__pyx_type_4alza_5model_5fuzzy_6pydawg_PyEditOperation;
-  if (PyType_Ready(&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "PyDawg", (PyObject *)&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "PyDawg", (PyObject *)&__pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_4alza_5model_5fuzzy_6pydawg_PyDawg = &__pyx_type_4alza_5model_5fuzzy_6pydawg_PyDawg;
   /*--- Type import code ---*/
   /*--- Variable import code ---*/
@@ -3274,6 +3124,100 @@ PyMODINIT_FUNC PyInit_pydawg(void)
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_author, __pyx_n_s_vesely) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
+  /* "alza/model/fuzzy/pydawg.pyx":33
+ *         void save(string);
+ * 
+ * class PyWordResult:             # <<<<<<<<<<<<<<
+ *     def __init__(self, word, edit_distance, edit_operations):
+ *         self.word = word
+ */
+  __pyx_t_1 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_PyWordResult, __pyx_n_s_PyWordResult, (PyObject *) NULL, __pyx_n_s_alza_model_fuzzy_pydawg, (PyObject *) NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+
+  /* "alza/model/fuzzy/pydawg.pyx":34
+ * 
+ * class PyWordResult:
+ *     def __init__(self, word, edit_distance, edit_operations):             # <<<<<<<<<<<<<<
+ *         self.word = word
+ *         self.edit_distance = edit_distance
+ */
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4alza_5model_5fuzzy_6pydawg_12PyWordResult_1__init__, 0, __pyx_n_s_PyWordResult___init, NULL, __pyx_n_s_alza_model_fuzzy_pydawg, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_init, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":33
+ *         void save(string);
+ * 
+ * class PyWordResult:             # <<<<<<<<<<<<<<
+ *     def __init__(self, word, edit_distance, edit_operations):
+ *         self.word = word
+ */
+  __pyx_t_2 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_PyWordResult, __pyx_empty_tuple, __pyx_t_1, NULL, 0, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_PyWordResult, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":40
+ * 
+ * 
+ * class PyEditOperation:             # <<<<<<<<<<<<<<
+ * 
+ *     def __init__(self, e_from, e_to, position, operation):
+ */
+  __pyx_t_1 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_PyEditOperation, __pyx_n_s_PyEditOperation, (PyObject *) NULL, __pyx_n_s_alza_model_fuzzy_pydawg, (PyObject *) NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+
+  /* "alza/model/fuzzy/pydawg.pyx":42
+ * class PyEditOperation:
+ * 
+ *     def __init__(self, e_from, e_to, position, operation):             # <<<<<<<<<<<<<<
+ *         self.e_from = e_from
+ *         self.e_to = e_to
+ */
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_1__init__, 0, __pyx_n_s_PyEditOperation___init, NULL, __pyx_n_s_alza_model_fuzzy_pydawg, __pyx_d, ((PyObject *)__pyx_codeobj__11)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_init, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":48
+ *         self.operation = operation
+ * 
+ *     def __str__(self):             # <<<<<<<<<<<<<<
+ *         op = 'Insert'
+ *         if self.operation == DELETE:
+ */
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_3__str__, 0, __pyx_n_s_PyEditOperation___str, NULL, __pyx_n_s_alza_model_fuzzy_pydawg, __pyx_d, ((PyObject *)__pyx_codeobj__13)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_str, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":56
+ *         return "%s : %s -> %s, pos=%d" % (op, self.e_from, self.e_to, self.position)
+ * 
+ *     def __repr__(self):             # <<<<<<<<<<<<<<
+ *         return self.__str__()
+ * 
+ */
+  __pyx_t_2 = __Pyx_CyFunction_NewEx(&__pyx_mdef_4alza_5model_5fuzzy_6pydawg_15PyEditOperation_5__repr__, 0, __pyx_n_s_PyEditOperation___repr, NULL, __pyx_n_s_alza_model_fuzzy_pydawg, __pyx_d, ((PyObject *)__pyx_codeobj__15)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyObject_SetItem(__pyx_t_1, __pyx_n_s_repr, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "alza/model/fuzzy/pydawg.pyx":40
+ * 
+ * 
+ * class PyEditOperation:             # <<<<<<<<<<<<<<
+ * 
+ *     def __init__(self, e_from, e_to, position, operation):
+ */
+  __pyx_t_2 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_PyEditOperation, __pyx_empty_tuple, __pyx_t_1, NULL, 0, 1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_PyEditOperation, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
   /* "alza/model/fuzzy/pydawg.pyx":1
  * #distutils: language = c++             # <<<<<<<<<<<<<<
  * #distutils: sources = Dawg.cpp
@@ -3284,12 +3228,12 @@ PyMODINIT_FUNC PyInit_pydawg(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "string.from_py":13
+  /* "string.to_py":55
  * 
- * @cname("__pyx_convert_string_from_py_std__in_string")
- * cdef string __pyx_convert_string_from_py_std__in_string(object o) except *:             # <<<<<<<<<<<<<<
- *     cdef Py_ssize_t length
- *     cdef char* data = __Pyx_PyObject_AsStringAndSize(o, &length)
+ * @cname("__pyx_convert_PyByteArray_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+ * 
  */
 
   /*--- Wrapped vars code ---*/
@@ -3297,6 +3241,7 @@ PyMODINIT_FUNC PyInit_pydawg(void)
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
     if (__pyx_d) {
       __Pyx_AddTraceback("init alza.model.fuzzy.pydawg", __pyx_clineno, __pyx_lineno, __pyx_filename);
@@ -3367,154 +3312,6 @@ static void __Pyx_RaiseArgtupleInvalid(
                  "%.200s() takes %.8s %" CYTHON_FORMAT_SSIZE_T "d positional argument%.1s (%" CYTHON_FORMAT_SSIZE_T "d given)",
                  func_name, more_or_less, num_expected,
                  (num_expected == 1) ? "" : "s", num_found);
-}
-
-static CYTHON_INLINE int __Pyx_CheckKeywordStrings(
-    PyObject *kwdict,
-    const char* function_name,
-    int kw_allowed)
-{
-    PyObject* key = 0;
-    Py_ssize_t pos = 0;
-#if CYTHON_COMPILING_IN_PYPY
-    if (!kw_allowed && PyDict_Next(kwdict, &pos, &key, 0))
-        goto invalid_keyword;
-    return 1;
-#else
-    while (PyDict_Next(kwdict, &pos, &key, 0)) {
-        #if PY_MAJOR_VERSION < 3
-        if (unlikely(!PyString_CheckExact(key)) && unlikely(!PyString_Check(key)))
-        #endif
-            if (unlikely(!PyUnicode_Check(key)))
-                goto invalid_keyword_type;
-    }
-    if ((!kw_allowed) && unlikely(key))
-        goto invalid_keyword;
-    return 1;
-invalid_keyword_type:
-    PyErr_Format(PyExc_TypeError,
-        "%.200s() keywords must be strings", function_name);
-    return 0;
-#endif
-invalid_keyword:
-    PyErr_Format(PyExc_TypeError,
-    #if PY_MAJOR_VERSION < 3
-        "%.200s() got an unexpected keyword argument '%.200s'",
-        function_name, PyString_AsString(key));
-    #else
-        "%s() got an unexpected keyword argument '%U'",
-        function_name, key);
-    #endif
-    return 0;
-}
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
-    PyObject *result;
-    ternaryfunc call = func->ob_type->tp_call;
-    if (unlikely(!call))
-        return PyObject_Call(func, arg, kw);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = (*call)(func, arg, kw);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
-    PyObject *self, *result;
-    PyCFunction cfunc;
-    cfunc = PyCFunction_GET_FUNCTION(func);
-    self = PyCFunction_GET_SELF(func);
-    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
-        return NULL;
-    result = cfunc(self, arg);
-    Py_LeaveRecursiveCall();
-    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
-        PyErr_SetString(
-            PyExc_SystemError,
-            "NULL result without error in PyObject_Call");
-    }
-    return result;
-}
-#endif
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *result;
-    PyObject *args = PyTuple_New(1);
-    if (unlikely(!args)) return NULL;
-    Py_INCREF(arg);
-    PyTuple_SET_ITEM(args, 0, arg);
-    result = __Pyx_PyObject_Call(func, args, NULL);
-    Py_DECREF(args);
-    return result;
-}
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
-#else
-    if (likely(PyCFunction_Check(func))) {
-#endif
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
-            return __Pyx_PyObject_CallMethO(func, arg);
-        }
-    }
-    return __Pyx__PyObject_CallOneArg(func, arg);
-}
-#else
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject* args = PyTuple_Pack(1, arg);
-    return (likely(args)) ? __Pyx_PyObject_Call(func, args, NULL) : NULL;
-}
-#endif
-
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
-#else
-    if (likely(PyCFunction_Check(func))) {
-#endif
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
-            return __Pyx_PyObject_CallMethO(func, NULL);
-        }
-    }
-    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
-}
-#endif
-
-static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
-    PyErr_Format(PyExc_TypeError,
-        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
-        name, type->tp_name, Py_TYPE(obj)->tp_name);
-}
-static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
-    const char *name, int exact)
-{
-    if (unlikely(!type)) {
-        PyErr_SetString(PyExc_SystemError, "Missing type object");
-        return 0;
-    }
-    if (none_allowed && obj == Py_None) return 1;
-    else if (exact) {
-        if (likely(Py_TYPE(obj) == type)) return 1;
-        #if PY_MAJOR_VERSION == 2
-        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
-        #endif
-    }
-    else {
-        if (likely(PyObject_TypeCheck(obj, type))) return 1;
-    }
-    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
-    return 0;
 }
 
 static void __Pyx_RaiseDoubleKeywordsError(
@@ -3629,6 +3426,864 @@ invalid_keyword:
     #endif
 bad:
     return -1;
+}
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyObject *result;
+    ternaryfunc call = func->ob_type->tp_call;
+    if (unlikely(!call))
+        return PyObject_Call(func, arg, kw);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = (*call)(func, arg, kw);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
+    PyObject *self, *result;
+    PyCFunction cfunc;
+    cfunc = PyCFunction_GET_FUNCTION(func);
+    self = PyCFunction_GET_SELF(func);
+    if (unlikely(Py_EnterRecursiveCall((char*)" while calling a Python object")))
+        return NULL;
+    result = cfunc(self, arg);
+    Py_LeaveRecursiveCall();
+    if (unlikely(!result) && unlikely(!PyErr_Occurred())) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "NULL result without error in PyObject_Call");
+    }
+    return result;
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static PyObject* __Pyx__PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *result;
+    PyObject *args = PyTuple_New(1);
+    if (unlikely(!args)) return NULL;
+    Py_INCREF(arg);
+    PyTuple_SET_ITEM(args, 0, arg);
+    result = __Pyx_PyObject_Call(func, args, NULL);
+    Py_DECREF(args);
+    return result;
+}
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+#else
+    if (likely(PyCFunction_Check(func))) {
+#endif
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_O)) {
+            return __Pyx_PyObject_CallMethO(func, arg);
+        }
+    }
+    return __Pyx__PyObject_CallOneArg(func, arg);
+}
+#else
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject* args = PyTuple_Pack(1, arg);
+    return (likely(args)) ? __Pyx_PyObject_Call(func, args, NULL) : NULL;
+}
+#endif
+
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || PyObject_TypeCheck(func, __pyx_CyFunctionType))) {
+#else
+    if (likely(PyCFunction_Check(func))) {
+#endif
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
+            return __Pyx_PyObject_CallMethO(func, NULL);
+        }
+    }
+    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
+}
+#endif
+
+static CYTHON_INLINE int __Pyx_CheckKeywordStrings(
+    PyObject *kwdict,
+    const char* function_name,
+    int kw_allowed)
+{
+    PyObject* key = 0;
+    Py_ssize_t pos = 0;
+#if CYTHON_COMPILING_IN_PYPY
+    if (!kw_allowed && PyDict_Next(kwdict, &pos, &key, 0))
+        goto invalid_keyword;
+    return 1;
+#else
+    while (PyDict_Next(kwdict, &pos, &key, 0)) {
+        #if PY_MAJOR_VERSION < 3
+        if (unlikely(!PyString_CheckExact(key)) && unlikely(!PyString_Check(key)))
+        #endif
+            if (unlikely(!PyUnicode_Check(key)))
+                goto invalid_keyword_type;
+    }
+    if ((!kw_allowed) && unlikely(key))
+        goto invalid_keyword;
+    return 1;
+invalid_keyword_type:
+    PyErr_Format(PyExc_TypeError,
+        "%.200s() keywords must be strings", function_name);
+    return 0;
+#endif
+invalid_keyword:
+    PyErr_Format(PyExc_TypeError,
+    #if PY_MAJOR_VERSION < 3
+        "%.200s() got an unexpected keyword argument '%.200s'",
+        function_name, PyString_AsString(key));
+    #else
+        "%s() got an unexpected keyword argument '%U'",
+        function_name, key);
+    #endif
+    return 0;
+}
+
+static void __Pyx_RaiseArgumentTypeInvalid(const char* name, PyObject *obj, PyTypeObject *type) {
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+}
+static CYTHON_INLINE int __Pyx_ArgTypeTest(PyObject *obj, PyTypeObject *type, int none_allowed,
+    const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
+    }
+    if (none_allowed && obj == Py_None) return 1;
+    else if (exact) {
+        if (likely(Py_TYPE(obj) == type)) return 1;
+        #if PY_MAJOR_VERSION == 2
+        else if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(PyObject_TypeCheck(obj, type))) return 1;
+    }
+    __Pyx_RaiseArgumentTypeInvalid(name, obj, type);
+    return 0;
+}
+
+static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name) {
+    PyObject *result;
+#if CYTHON_COMPILING_IN_CPYTHON
+    result = PyDict_GetItem(__pyx_d, name);
+    if (likely(result)) {
+        Py_INCREF(result);
+    } else {
+#else
+    result = PyObject_GetItem(__pyx_d, name);
+    if (!result) {
+        PyErr_Clear();
+#endif
+        result = __Pyx_GetBuiltinName(name);
+    }
+    return result;
+}
+
+static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type) {
+    PyObject* fake_module;
+    PyTypeObject* cached_type = NULL;
+    fake_module = PyImport_AddModule((char*) "_cython_" CYTHON_ABI);
+    if (!fake_module) return NULL;
+    Py_INCREF(fake_module);
+    cached_type = (PyTypeObject*) PyObject_GetAttrString(fake_module, type->tp_name);
+    if (cached_type) {
+        if (!PyType_Check((PyObject*)cached_type)) {
+            PyErr_Format(PyExc_TypeError,
+                "Shared Cython type %.200s is not a type object",
+                type->tp_name);
+            goto bad;
+        }
+        if (cached_type->tp_basicsize != type->tp_basicsize) {
+            PyErr_Format(PyExc_TypeError,
+                "Shared Cython type %.200s has the wrong size, try recompiling",
+                type->tp_name);
+            goto bad;
+        }
+    } else {
+        if (!PyErr_ExceptionMatches(PyExc_AttributeError)) goto bad;
+        PyErr_Clear();
+        if (PyType_Ready(type) < 0) goto bad;
+        if (PyObject_SetAttrString(fake_module, type->tp_name, (PyObject*) type) < 0)
+            goto bad;
+        Py_INCREF(type);
+        cached_type = type;
+    }
+done:
+    Py_DECREF(fake_module);
+    return cached_type;
+bad:
+    Py_XDECREF(cached_type);
+    cached_type = NULL;
+    goto done;
+}
+
+static PyObject *
+__Pyx_CyFunction_get_doc(__pyx_CyFunctionObject *op, CYTHON_UNUSED void *closure)
+{
+    if (unlikely(op->func_doc == NULL)) {
+        if (op->func.m_ml->ml_doc) {
+#if PY_MAJOR_VERSION >= 3
+            op->func_doc = PyUnicode_FromString(op->func.m_ml->ml_doc);
+#else
+            op->func_doc = PyString_FromString(op->func.m_ml->ml_doc);
+#endif
+            if (unlikely(op->func_doc == NULL))
+                return NULL;
+        } else {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+    }
+    Py_INCREF(op->func_doc);
+    return op->func_doc;
+}
+static int
+__Pyx_CyFunction_set_doc(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp = op->func_doc;
+    if (value == NULL) {
+        value = Py_None;
+    }
+    Py_INCREF(value);
+    op->func_doc = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_name(__pyx_CyFunctionObject *op)
+{
+    if (unlikely(op->func_name == NULL)) {
+#if PY_MAJOR_VERSION >= 3
+        op->func_name = PyUnicode_InternFromString(op->func.m_ml->ml_name);
+#else
+        op->func_name = PyString_InternFromString(op->func.m_ml->ml_name);
+#endif
+        if (unlikely(op->func_name == NULL))
+            return NULL;
+    }
+    Py_INCREF(op->func_name);
+    return op->func_name;
+}
+static int
+__Pyx_CyFunction_set_name(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value))) {
+#else
+    if (unlikely(value == NULL || !PyString_Check(value))) {
+#endif
+        PyErr_SetString(PyExc_TypeError,
+                        "__name__ must be set to a string object");
+        return -1;
+    }
+    tmp = op->func_name;
+    Py_INCREF(value);
+    op->func_name = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_qualname(__pyx_CyFunctionObject *op)
+{
+    Py_INCREF(op->func_qualname);
+    return op->func_qualname;
+}
+static int
+__Pyx_CyFunction_set_qualname(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value))) {
+#else
+    if (unlikely(value == NULL || !PyString_Check(value))) {
+#endif
+        PyErr_SetString(PyExc_TypeError,
+                        "__qualname__ must be set to a string object");
+        return -1;
+    }
+    tmp = op->func_qualname;
+    Py_INCREF(value);
+    op->func_qualname = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_self(__pyx_CyFunctionObject *m, CYTHON_UNUSED void *closure)
+{
+    PyObject *self;
+    self = m->func_closure;
+    if (self == NULL)
+        self = Py_None;
+    Py_INCREF(self);
+    return self;
+}
+static PyObject *
+__Pyx_CyFunction_get_dict(__pyx_CyFunctionObject *op)
+{
+    if (unlikely(op->func_dict == NULL)) {
+        op->func_dict = PyDict_New();
+        if (unlikely(op->func_dict == NULL))
+            return NULL;
+    }
+    Py_INCREF(op->func_dict);
+    return op->func_dict;
+}
+static int
+__Pyx_CyFunction_set_dict(__pyx_CyFunctionObject *op, PyObject *value)
+{
+    PyObject *tmp;
+    if (unlikely(value == NULL)) {
+        PyErr_SetString(PyExc_TypeError,
+               "function's dictionary may not be deleted");
+        return -1;
+    }
+    if (unlikely(!PyDict_Check(value))) {
+        PyErr_SetString(PyExc_TypeError,
+               "setting function's dictionary to a non-dict");
+        return -1;
+    }
+    tmp = op->func_dict;
+    Py_INCREF(value);
+    op->func_dict = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_globals(__pyx_CyFunctionObject *op)
+{
+    Py_INCREF(op->func_globals);
+    return op->func_globals;
+}
+static PyObject *
+__Pyx_CyFunction_get_closure(CYTHON_UNUSED __pyx_CyFunctionObject *op)
+{
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+static PyObject *
+__Pyx_CyFunction_get_code(__pyx_CyFunctionObject *op)
+{
+    PyObject* result = (op->func_code) ? op->func_code : Py_None;
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_init_defaults(__pyx_CyFunctionObject *op) {
+    PyObject *res = op->defaults_getter((PyObject *) op);
+    if (unlikely(!res))
+        return -1;
+    op->defaults_tuple = PyTuple_GET_ITEM(res, 0);
+    Py_INCREF(op->defaults_tuple);
+    op->defaults_kwdict = PyTuple_GET_ITEM(res, 1);
+    Py_INCREF(op->defaults_kwdict);
+    Py_DECREF(res);
+    return 0;
+}
+static int
+__Pyx_CyFunction_set_defaults(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value) {
+        value = Py_None;
+    } else if (value != Py_None && !PyTuple_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__defaults__ must be set to a tuple object");
+        return -1;
+    }
+    Py_INCREF(value);
+    tmp = op->defaults_tuple;
+    op->defaults_tuple = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_defaults(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->defaults_tuple;
+    if (unlikely(!result)) {
+        if (op->defaults_getter) {
+            if (__Pyx_CyFunction_init_defaults(op) < 0) return NULL;
+            result = op->defaults_tuple;
+        } else {
+            result = Py_None;
+        }
+    }
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_set_kwdefaults(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value) {
+        value = Py_None;
+    } else if (value != Py_None && !PyDict_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__kwdefaults__ must be set to a dict object");
+        return -1;
+    }
+    Py_INCREF(value);
+    tmp = op->defaults_kwdict;
+    op->defaults_kwdict = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_kwdefaults(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->defaults_kwdict;
+    if (unlikely(!result)) {
+        if (op->defaults_getter) {
+            if (__Pyx_CyFunction_init_defaults(op) < 0) return NULL;
+            result = op->defaults_kwdict;
+        } else {
+            result = Py_None;
+        }
+    }
+    Py_INCREF(result);
+    return result;
+}
+static int
+__Pyx_CyFunction_set_annotations(__pyx_CyFunctionObject *op, PyObject* value) {
+    PyObject* tmp;
+    if (!value || value == Py_None) {
+        value = NULL;
+    } else if (!PyDict_Check(value)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "__annotations__ must be set to a dict object");
+        return -1;
+    }
+    Py_XINCREF(value);
+    tmp = op->func_annotations;
+    op->func_annotations = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_CyFunction_get_annotations(__pyx_CyFunctionObject *op) {
+    PyObject* result = op->func_annotations;
+    if (unlikely(!result)) {
+        result = PyDict_New();
+        if (unlikely(!result)) return NULL;
+        op->func_annotations = result;
+    }
+    Py_INCREF(result);
+    return result;
+}
+static PyGetSetDef __pyx_CyFunction_getsets[] = {
+    {(char *) "func_doc", (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
+    {(char *) "__doc__",  (getter)__Pyx_CyFunction_get_doc, (setter)__Pyx_CyFunction_set_doc, 0, 0},
+    {(char *) "func_name", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
+    {(char *) "__name__", (getter)__Pyx_CyFunction_get_name, (setter)__Pyx_CyFunction_set_name, 0, 0},
+    {(char *) "__qualname__", (getter)__Pyx_CyFunction_get_qualname, (setter)__Pyx_CyFunction_set_qualname, 0, 0},
+    {(char *) "__self__", (getter)__Pyx_CyFunction_get_self, 0, 0, 0},
+    {(char *) "func_dict", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
+    {(char *) "__dict__", (getter)__Pyx_CyFunction_get_dict, (setter)__Pyx_CyFunction_set_dict, 0, 0},
+    {(char *) "func_globals", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
+    {(char *) "__globals__", (getter)__Pyx_CyFunction_get_globals, 0, 0, 0},
+    {(char *) "func_closure", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
+    {(char *) "__closure__", (getter)__Pyx_CyFunction_get_closure, 0, 0, 0},
+    {(char *) "func_code", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
+    {(char *) "__code__", (getter)__Pyx_CyFunction_get_code, 0, 0, 0},
+    {(char *) "func_defaults", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
+    {(char *) "__defaults__", (getter)__Pyx_CyFunction_get_defaults, (setter)__Pyx_CyFunction_set_defaults, 0, 0},
+    {(char *) "__kwdefaults__", (getter)__Pyx_CyFunction_get_kwdefaults, (setter)__Pyx_CyFunction_set_kwdefaults, 0, 0},
+    {(char *) "__annotations__", (getter)__Pyx_CyFunction_get_annotations, (setter)__Pyx_CyFunction_set_annotations, 0, 0},
+    {0, 0, 0, 0, 0}
+};
+static PyMemberDef __pyx_CyFunction_members[] = {
+    {(char *) "__module__", T_OBJECT, offsetof(__pyx_CyFunctionObject, func.m_module), PY_WRITE_RESTRICTED, 0},
+    {0, 0, 0,  0, 0}
+};
+static PyObject *
+__Pyx_CyFunction_reduce(__pyx_CyFunctionObject *m, CYTHON_UNUSED PyObject *args)
+{
+#if PY_MAJOR_VERSION >= 3
+    return PyUnicode_FromString(m->func.m_ml->ml_name);
+#else
+    return PyString_FromString(m->func.m_ml->ml_name);
+#endif
+}
+static PyMethodDef __pyx_CyFunction_methods[] = {
+    {"__reduce__", (PyCFunction)__Pyx_CyFunction_reduce, METH_VARARGS, 0},
+    {0, 0, 0, 0}
+};
+#if PY_VERSION_HEX < 0x030500A0
+#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func_weakreflist)
+#else
+#define __Pyx_CyFunction_weakreflist(cyfunc) ((cyfunc)->func.m_weakreflist)
+#endif
+static PyObject *__Pyx_CyFunction_New(PyTypeObject *type, PyMethodDef *ml, int flags, PyObject* qualname,
+                                      PyObject *closure, PyObject *module, PyObject* globals, PyObject* code) {
+    __pyx_CyFunctionObject *op = PyObject_GC_New(__pyx_CyFunctionObject, type);
+    if (op == NULL)
+        return NULL;
+    op->flags = flags;
+    __Pyx_CyFunction_weakreflist(op) = NULL;
+    op->func.m_ml = ml;
+    op->func.m_self = (PyObject *) op;
+    Py_XINCREF(closure);
+    op->func_closure = closure;
+    Py_XINCREF(module);
+    op->func.m_module = module;
+    op->func_dict = NULL;
+    op->func_name = NULL;
+    Py_INCREF(qualname);
+    op->func_qualname = qualname;
+    op->func_doc = NULL;
+    op->func_classobj = NULL;
+    op->func_globals = globals;
+    Py_INCREF(op->func_globals);
+    Py_XINCREF(code);
+    op->func_code = code;
+    op->defaults_pyobjects = 0;
+    op->defaults = NULL;
+    op->defaults_tuple = NULL;
+    op->defaults_kwdict = NULL;
+    op->defaults_getter = NULL;
+    op->func_annotations = NULL;
+    PyObject_GC_Track(op);
+    return (PyObject *) op;
+}
+static int
+__Pyx_CyFunction_clear(__pyx_CyFunctionObject *m)
+{
+    Py_CLEAR(m->func_closure);
+    Py_CLEAR(m->func.m_module);
+    Py_CLEAR(m->func_dict);
+    Py_CLEAR(m->func_name);
+    Py_CLEAR(m->func_qualname);
+    Py_CLEAR(m->func_doc);
+    Py_CLEAR(m->func_globals);
+    Py_CLEAR(m->func_code);
+    Py_CLEAR(m->func_classobj);
+    Py_CLEAR(m->defaults_tuple);
+    Py_CLEAR(m->defaults_kwdict);
+    Py_CLEAR(m->func_annotations);
+    if (m->defaults) {
+        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
+        int i;
+        for (i = 0; i < m->defaults_pyobjects; i++)
+            Py_XDECREF(pydefaults[i]);
+        PyMem_Free(m->defaults);
+        m->defaults = NULL;
+    }
+    return 0;
+}
+static void __Pyx_CyFunction_dealloc(__pyx_CyFunctionObject *m)
+{
+    PyObject_GC_UnTrack(m);
+    if (__Pyx_CyFunction_weakreflist(m) != NULL)
+        PyObject_ClearWeakRefs((PyObject *) m);
+    __Pyx_CyFunction_clear(m);
+    PyObject_GC_Del(m);
+}
+static int __Pyx_CyFunction_traverse(__pyx_CyFunctionObject *m, visitproc visit, void *arg)
+{
+    Py_VISIT(m->func_closure);
+    Py_VISIT(m->func.m_module);
+    Py_VISIT(m->func_dict);
+    Py_VISIT(m->func_name);
+    Py_VISIT(m->func_qualname);
+    Py_VISIT(m->func_doc);
+    Py_VISIT(m->func_globals);
+    Py_VISIT(m->func_code);
+    Py_VISIT(m->func_classobj);
+    Py_VISIT(m->defaults_tuple);
+    Py_VISIT(m->defaults_kwdict);
+    if (m->defaults) {
+        PyObject **pydefaults = __Pyx_CyFunction_Defaults(PyObject *, m);
+        int i;
+        for (i = 0; i < m->defaults_pyobjects; i++)
+            Py_VISIT(pydefaults[i]);
+    }
+    return 0;
+}
+static PyObject *__Pyx_CyFunction_descr_get(PyObject *func, PyObject *obj, PyObject *type)
+{
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    if (m->flags & __Pyx_CYFUNCTION_STATICMETHOD) {
+        Py_INCREF(func);
+        return func;
+    }
+    if (m->flags & __Pyx_CYFUNCTION_CLASSMETHOD) {
+        if (type == NULL)
+            type = (PyObject *)(Py_TYPE(obj));
+        return __Pyx_PyMethod_New(func, type, (PyObject *)(Py_TYPE(type)));
+    }
+    if (obj == Py_None)
+        obj = NULL;
+    return __Pyx_PyMethod_New(func, obj, type);
+}
+static PyObject*
+__Pyx_CyFunction_repr(__pyx_CyFunctionObject *op)
+{
+#if PY_MAJOR_VERSION >= 3
+    return PyUnicode_FromFormat("<cyfunction %U at %p>",
+                                op->func_qualname, (void *)op);
+#else
+    return PyString_FromFormat("<cyfunction %s at %p>",
+                               PyString_AsString(op->func_qualname), (void *)op);
+#endif
+}
+#if CYTHON_COMPILING_IN_PYPY
+static PyObject * __Pyx_CyFunction_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+    PyCFunctionObject* f = (PyCFunctionObject*)func;
+    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
+    PyObject *self = PyCFunction_GET_SELF(func);
+    Py_ssize_t size;
+    switch (PyCFunction_GET_FLAGS(func) & ~(METH_CLASS | METH_STATIC | METH_COEXIST)) {
+    case METH_VARARGS:
+        if (likely(kw == NULL) || PyDict_Size(kw) == 0)
+            return (*meth)(self, arg);
+        break;
+    case METH_VARARGS | METH_KEYWORDS:
+        return (*(PyCFunctionWithKeywords)meth)(self, arg, kw);
+    case METH_NOARGS:
+        if (likely(kw == NULL) || PyDict_Size(kw) == 0) {
+            size = PyTuple_GET_SIZE(arg);
+            if (size == 0)
+                return (*meth)(self, NULL);
+            PyErr_Format(PyExc_TypeError,
+                "%.200s() takes no arguments (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                f->m_ml->ml_name, size);
+            return NULL;
+        }
+        break;
+    case METH_O:
+        if (likely(kw == NULL) || PyDict_Size(kw) == 0) {
+            size = PyTuple_GET_SIZE(arg);
+            if (size == 1)
+                return (*meth)(self, PyTuple_GET_ITEM(arg, 0));
+            PyErr_Format(PyExc_TypeError,
+                "%.200s() takes exactly one argument (%" CYTHON_FORMAT_SSIZE_T "d given)",
+                f->m_ml->ml_name, size);
+            return NULL;
+        }
+        break;
+    default:
+        PyErr_SetString(PyExc_SystemError, "Bad call flags in "
+                        "__Pyx_CyFunction_Call. METH_OLDARGS is no "
+                        "longer supported!");
+        return NULL;
+    }
+    PyErr_Format(PyExc_TypeError, "%.200s() takes no keyword arguments",
+                 f->m_ml->ml_name);
+    return NULL;
+}
+#else
+static PyObject * __Pyx_CyFunction_Call(PyObject *func, PyObject *arg, PyObject *kw) {
+	return PyCFunction_Call(func, arg, kw);
+}
+#endif
+static PyTypeObject __pyx_CyFunctionType_type = {
+    PyVarObject_HEAD_INIT(0, 0)
+    "cython_function_or_method",
+    sizeof(__pyx_CyFunctionObject),
+    0,
+    (destructor) __Pyx_CyFunction_dealloc,
+    0,
+    0,
+    0,
+#if PY_MAJOR_VERSION < 3
+    0,
+#else
+    0,
+#endif
+    (reprfunc) __Pyx_CyFunction_repr,
+    0,
+    0,
+    0,
+    0,
+    __Pyx_CyFunction_Call,
+    0,
+    0,
+    0,
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    0,
+    (traverseproc) __Pyx_CyFunction_traverse,
+    (inquiry) __Pyx_CyFunction_clear,
+    0,
+#if PY_VERSION_HEX < 0x030500A0
+    offsetof(__pyx_CyFunctionObject, func_weakreflist),
+#else
+    offsetof(PyCFunctionObject, m_weakreflist),
+#endif
+    0,
+    0,
+    __pyx_CyFunction_methods,
+    __pyx_CyFunction_members,
+    __pyx_CyFunction_getsets,
+    0,
+    0,
+    __Pyx_CyFunction_descr_get,
+    0,
+    offsetof(__pyx_CyFunctionObject, func_dict),
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+#if PY_VERSION_HEX >= 0x030400a1
+    0,
+#endif
+};
+static int __Pyx_CyFunction_init(void) {
+#if !CYTHON_COMPILING_IN_PYPY
+    __pyx_CyFunctionType_type.tp_call = PyCFunction_Call;
+#endif
+    __pyx_CyFunctionType = __Pyx_FetchCommonType(&__pyx_CyFunctionType_type);
+    if (__pyx_CyFunctionType == NULL) {
+        return -1;
+    }
+    return 0;
+}
+static CYTHON_INLINE void *__Pyx_CyFunction_InitDefaults(PyObject *func, size_t size, int pyobjects) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults = PyMem_Malloc(size);
+    if (!m->defaults)
+        return PyErr_NoMemory();
+    memset(m->defaults, 0, size);
+    m->defaults_pyobjects = pyobjects;
+    return m->defaults;
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsTuple(PyObject *func, PyObject *tuple) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults_tuple = tuple;
+    Py_INCREF(tuple);
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetDefaultsKwDict(PyObject *func, PyObject *dict) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->defaults_kwdict = dict;
+    Py_INCREF(dict);
+}
+static CYTHON_INLINE void __Pyx_CyFunction_SetAnnotationsDict(PyObject *func, PyObject *dict) {
+    __pyx_CyFunctionObject *m = (__pyx_CyFunctionObject *) func;
+    m->func_annotations = dict;
+    Py_INCREF(dict);
+}
+
+static PyObject *__Pyx_CalculateMetaclass(PyTypeObject *metaclass, PyObject *bases) {
+    Py_ssize_t i, nbases = PyTuple_GET_SIZE(bases);
+    for (i=0; i < nbases; i++) {
+        PyTypeObject *tmptype;
+        PyObject *tmp = PyTuple_GET_ITEM(bases, i);
+        tmptype = Py_TYPE(tmp);
+#if PY_MAJOR_VERSION < 3
+        if (tmptype == &PyClass_Type)
+            continue;
+#endif
+        if (!metaclass) {
+            metaclass = tmptype;
+            continue;
+        }
+        if (PyType_IsSubtype(metaclass, tmptype))
+            continue;
+        if (PyType_IsSubtype(tmptype, metaclass)) {
+            metaclass = tmptype;
+            continue;
+        }
+        PyErr_SetString(PyExc_TypeError,
+                        "metaclass conflict: "
+                        "the metaclass of a derived class "
+                        "must be a (non-strict) subclass "
+                        "of the metaclasses of all its bases");
+        return NULL;
+    }
+    if (!metaclass) {
+#if PY_MAJOR_VERSION < 3
+        metaclass = &PyClass_Type;
+#else
+        metaclass = &PyType_Type;
+#endif
+    }
+    Py_INCREF((PyObject*) metaclass);
+    return (PyObject*) metaclass;
+}
+
+static PyObject *__Pyx_Py3MetaclassPrepare(PyObject *metaclass, PyObject *bases, PyObject *name,
+                                           PyObject *qualname, PyObject *mkw, PyObject *modname, PyObject *doc) {
+    PyObject *ns;
+    if (metaclass) {
+        PyObject *prep = __Pyx_PyObject_GetAttrStr(metaclass, __pyx_n_s_prepare);
+        if (prep) {
+            PyObject *pargs = PyTuple_Pack(2, name, bases);
+            if (unlikely(!pargs)) {
+                Py_DECREF(prep);
+                return NULL;
+            }
+            ns = PyObject_Call(prep, pargs, mkw);
+            Py_DECREF(prep);
+            Py_DECREF(pargs);
+        } else {
+            if (unlikely(!PyErr_ExceptionMatches(PyExc_AttributeError)))
+                return NULL;
+            PyErr_Clear();
+            ns = PyDict_New();
+        }
+    } else {
+        ns = PyDict_New();
+    }
+    if (unlikely(!ns))
+        return NULL;
+    if (unlikely(PyObject_SetItem(ns, __pyx_n_s_module, modname) < 0)) goto bad;
+    if (unlikely(PyObject_SetItem(ns, __pyx_n_s_qualname, qualname) < 0)) goto bad;
+    if (unlikely(doc && PyObject_SetItem(ns, __pyx_n_s_doc, doc) < 0)) goto bad;
+    return ns;
+bad:
+    Py_DECREF(ns);
+    return NULL;
+}
+static PyObject *__Pyx_Py3ClassCreate(PyObject *metaclass, PyObject *name, PyObject *bases,
+                                      PyObject *dict, PyObject *mkw,
+                                      int calculate_metaclass, int allow_py2_metaclass) {
+    PyObject *result, *margs;
+    PyObject *owned_metaclass = NULL;
+    if (allow_py2_metaclass) {
+        owned_metaclass = PyObject_GetItem(dict, __pyx_n_s_metaclass);
+        if (owned_metaclass) {
+            metaclass = owned_metaclass;
+        } else if (likely(PyErr_ExceptionMatches(PyExc_KeyError))) {
+            PyErr_Clear();
+        } else {
+            return NULL;
+        }
+    }
+    if (calculate_metaclass && (!metaclass || PyType_Check(metaclass))) {
+        metaclass = __Pyx_CalculateMetaclass((PyTypeObject*) metaclass, bases);
+        Py_XDECREF(owned_metaclass);
+        if (unlikely(!metaclass))
+            return NULL;
+        owned_metaclass = metaclass;
+    }
+    margs = PyTuple_Pack(3, name, bases, dict);
+    if (unlikely(!margs)) {
+        result = NULL;
+    } else {
+        result = PyObject_Call(metaclass, margs, mkw);
+        Py_DECREF(margs);
+    }
+    Py_XDECREF(owned_metaclass);
+    return result;
 }
 
 static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
@@ -3916,32 +4571,6 @@ raise_neg_overflow:
     return (int) -1;
 }
 
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
-    const int neg_one = (int) -1, const_zero = 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(int) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(int) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
-            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
-        }
-    } else {
-        if (sizeof(int) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
-            return PyLong_FromLongLong((PY_LONG_LONG) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(int),
-                                     little, !is_unsigned);
-    }
-}
-
 static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *x) {
     const size_t neg_one = (size_t) -1, const_zero = 0;
     const int is_unsigned = neg_one > const_zero;
@@ -4045,6 +4674,32 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to size_t");
     return (size_t) -1;
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+    const int neg_one = (int) -1, const_zero = 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
 }
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {

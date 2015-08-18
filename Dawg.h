@@ -59,7 +59,7 @@ class EditOperation {
 
 class WordResult {
     public:
-    WordResult(int editDistance, const std::vector<EditOperation*> &operations, const stringtype &word) : m_edit_distance(
+    WordResult(int editDistance, const std::vector<EditOperation> &operations, const stringtype &word) : m_edit_distance(
             editDistance), m_operations(operations), m_word(word) { }
 
     stringtype getWord(){
@@ -71,13 +71,13 @@ class WordResult {
         return m_edit_distance;
     }
 
-    const std::vector<EditOperation*> &getEditOperations() const {
+    const std::vector<EditOperation> &getEditOperations() const {
         return m_operations;
     }
 
 private:
     int m_edit_distance;
-    std::vector<EditOperation*> m_operations;
+    std::vector<EditOperation> m_operations;
     stringtype m_word;
 };
 
@@ -172,7 +172,7 @@ public:
 
     bool contains(stringtype &word);
 
-    std::vector<WordResult*> fuzzy_search(stringtype &word, int fuzziness);
+    std::vector<WordResult> fuzzy_search(stringtype &word, int fuzziness);
 
     void load(const std::string &filename);
 
@@ -191,10 +191,10 @@ private:
 
     void compress_graph(size_t level);
 
-    void fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult*>& results, int **rows,
+    void fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult>& results, int **rows,
                                 char **path_rows, int fuzziness, chartype *path, int depth);
 
-    std::vector<EditOperation*> get_segmented(stringtype &word, chartype *similar_word, char **paths, int depth,
+    std::vector<EditOperation> get_segmented(stringtype &word, chartype *similar_word, char **paths, int depth,
                                                     int c);
 };
 

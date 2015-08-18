@@ -44,7 +44,7 @@ void Dawg::finish() {
     compress_graph(0);
 }
 
-std::vector<WordResult*> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
+std::vector<WordResult> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
     const size_t word_length = word.size();
     const size_t buffer_size = word_length + 1;
     const size_t buffer_size_f = buffer_size + fuzziness + 1;
@@ -57,7 +57,7 @@ std::vector<WordResult*> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
         row[i] = i;
         path_rows[0][i] = OpType::INSERT;
     }
-    std::vector<WordResult*> results;
+    std::vector<WordResult> results;
     for (auto it:m_root.getChilds()) {
         path[0] = it->getLetter();
         fuzzy_search_recursive(it, word, results, rows, path_rows, fuzziness, path, 1);
@@ -68,7 +68,7 @@ std::vector<WordResult*> Dawg::fuzzy_search(stringtype &word, int fuzziness) {
 }
 
 
-void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult*>& results, int **rows,
+void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<WordResult>& results, int **rows,
                                   char **path_rows,
                                   int fuzziness, chartype *path, int depth) {
     size_t word_length = word.size();
@@ -108,8 +108,8 @@ void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<
     }
     if (row[word_length] <= fuzziness && node->isFinal()) {
         const std::string &string = stringtype(path);
-        const std::vector<EditOperation*> &x = get_segmented(word, path, path_rows, depth, word_length);
-        results.push_back(new WordResult(row[word_length], x, string));
+        const std::vector<EditOperation> &x = get_segmented(word, path, path_rows, depth, word_length);
+        results.push_back(WordResult(row[word_length], x, string));
     }
     if (minimum <= fuzziness) {
         size_t child_count = node->getChilds().size();
@@ -123,23 +123,23 @@ void Dawg::fuzzy_search_recursive(DawgNode *node, stringtype &word, std::vector<
 }
 
 
-std::vector<EditOperation*> Dawg::get_segmented(stringtype& word, chartype *similar_word, char **paths, int depth,
+std::vector<EditOperation> Dawg::get_segmented(stringtype& word, chartype *similar_word, char **paths, int depth,
                                                int c) {
-    std::vector<EditOperation*> edit_operations;
+    std::vector<EditOperation> edit_operations;
     while (depth > 0 || c > 0) {
         switch (paths[depth][c]) {
             case OpType::DELETE:
                 depth--;
-                edit_operations.push_back(new EditOperation(0, similar_word[depth], c, OpType::INSERT));
+                edit_operations.push_back(EditOperation(0, similar_word[depth], c, OpType::INSERT));
                 break;
             case OpType::INSERT:
                 c--;
-                edit_operations.push_back(new EditOperation(word[c], 0, c, OpType::DELETE));
+                edit_operations.push_back(EditOperation(word[c], 0, c, OpType::DELETE));
                 break;
             case OpType::REPLACE:
                 depth--;
                 c--;
-                edit_operations.push_back(new EditOperation(word[c], similar_word[depth], c, OpType::REPLACE));
+                edit_operations.push_back(EditOperation(word[c], similar_word[depth], c, OpType::REPLACE));
                 break;
             default:
                 depth--;
